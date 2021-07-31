@@ -5,15 +5,26 @@ services:
 
 stages:
   - build
-
-before_script:
-  - docker version
-  - docker login -u $CI_REGISTY_USER -p $CI_REGISTY_PASSWORD $CI_REGISTRY
+  - deploy
 
 build:
   stage: build
   script:
+    - docker version
+    - docker login -u $CI_REGISTY_USER -p $CI_REGISTY_PASSWORD $CI_REGISTRY
     - docker pull $CI_REGISTRY_IMAGE:latest || true
     - docker build --cache-from $CI_REGISTRY_IMAGE:latest --tag $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA --tag $CI_REGISTRY_IMAGE:latest .
     - docker push $CI_REGISTRY_IMAGE:$CI_COMMIT_SHA
     - docker push $CI_REGISTRY_IMAGE:latest
+
+deploy:
+  stage: deploy
+  image: dtzar/helm-kubectl
+  script:
+    - kubectl config set-cluster k8s --server="${K8s_SERVER}" 
+    - kubectl config set clusters.k8s.certificate-authority-data ${K8s_CERTIFICATE_AUTHORITY_DATA}
+    - kubectl config set-credentials gitlab --token="${K8s_TOKEN}"
+    - kubectl config set-context default --cluster=k8s --user=gitlab
+    - kubectl config use-context default
+    - sed -i "s/<VERSION>/${CI_COMMIT_SHORT_SHA}/g" deployment.yaml
+    - kubectl apply -f deployment.yaml

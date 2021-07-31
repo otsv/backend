@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ostvcafeteria-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nodejs
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 33%
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      containers:
+        - name: ostvcafeteria-backend
+          image: registry.gitlab.com/otsv.cafeteria/backend/ostvcafeteria-backend:latest
+          ports:
+            - containerPort: 3000
+      imagePullSecrets:
+        - name: gitlab-pull-secret    
