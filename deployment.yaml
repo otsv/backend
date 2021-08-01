@@ -22,5 +22,14 @@ spec:
           image: registry.gitlab.com/otsv.cafeteria/backend/ostvcafeteria-backend:latest
           ports:
             - containerPort: 3000
+          resources:
+            limits:
+              memory: 1024Mi
+            requests:
+              memory: 512Mi
+          env:
+            - name: MONGO_URL
+              value: mongodb://mongo:27017:cafeteria        
       imagePullSecrets:
-        - name: gitlab-pull-secret    
+        - name: gitlab-pull-secret
+          
