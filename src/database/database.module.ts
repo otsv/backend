@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AppConfigModule } from 'src/config/config.module';
-import { AppConfigService } from 'src/config/config.service';
+import { AppConfigModule } from 'src/common/config/config.module';
+import { AppConfigService } from 'src/common/config/config.service';
+import { toJson } from './plugin/toJson';
 
 @Module({
   imports: [
@@ -10,6 +11,10 @@ import { AppConfigService } from 'src/config/config.service';
       imports: [AppConfigModule],
       useFactory: (config: AppConfigService) => ({
         uri: config.databaseUrl,
+        connectionFactory: (connection) => {
+          connection.plugin(toJson);
+          return connection;
+        },
       }),
       inject: [AppConfigService],
     }),

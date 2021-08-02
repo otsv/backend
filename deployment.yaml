@@ -29,7 +29,18 @@ spec:
               memory: 512Mi
           env:
             - name: MONGO_URL
-              value: mongodb://mongo:27017:cafeteria        
+              value: mongodb://mongo:27017:cafeteria
+            - name: PORT
+              value: "3000"
+            - name: NODE_ENV
+              value: development
+            - name: JWT_SECRET
+              value: ostvcafeteria
+            - name: JWT_ACCESS_EXPIRATION
+              value: "7"
+            - name: JWT_REFRESH_EXPIRATION
+              value: "30"
+            - name: ACCOUNTS_SEEDER
+              value: "true"        
       imagePullSecrets:
         - name: gitlab-pull-secret
-          

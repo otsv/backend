@@ -3,10 +3,27 @@ version: '3.4'
 services:
   ostvcafeteria:
     image: ostvcafeteria-backend:latest
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    environment:
-      NODE_ENV: production
+    environment: 
+      - NODE_ENV=${NODE_ENV}
+      - MONGO_URL=mongodb://mongo:27017:cafeteria
+      - PORT=${PORT}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
+      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
+      - ACCOUNTS_SEEDER=${ACCOUNTS_SEEDER}
     ports:
-      - 3000:3000
+      - "${PORT}:${PORT}"
+    restart: unless-stopped
+    depends_on: 
+      - mongo
+  
+
+  mongo:
+    image: mongo:4.0
+    volumes: 
+      - storage/:/data/db
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+volumes:
+  storage:

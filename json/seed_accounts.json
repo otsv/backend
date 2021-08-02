@@ -1,0 +1,21 @@
+[
+    {
+        "name" : "quoc khanh admin",
+        "email" :"quockhanh@gmail.com",
+        "password" : "abc123456",
+        "role" : "admin"
+    },
+    {
+        "name" : "quoc khanh staff",
+        "email" :"quockhanh1@gmail.com",
+        "password" : "abc123456",
+        "role" : "staff"
+    },
+    {
+        "name" : "quoc khanh admin cafeteria",
+        "email" :"quockhanh2@gmail.com",
+        "password" : "abc123456",
+        "role" : "adminCafeteria"
+    }
+
+]
