@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: ostvcafeteria-backend
-          image: registry.gitlab.com/otsv.cafeteria/backend/ostvcafeteria-backend:latest
+          image: ghcr.io/otsv/backend/ostvcafeteria-backend:latest
           ports:
             - containerPort: 3000
           resources:
@@ -41,6 +41,7 @@ spec:
             - name: JWT_REFRESH_EXPIRATION
               value: "30"
             - name: ACCOUNTS_SEEDER
-              value: "true"        
+              value: "true"
       imagePullSecrets:
-        - name: gitlab-pull-secret
+        - name: github-pull-secret 
+  
