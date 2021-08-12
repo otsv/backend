@@ -11,11 +11,11 @@ export enum Role {
   staff,
 }
 
-export const RoleConfig = new Map<Role, Array<RolePermission>>([
-  [Role.admin, [RolePermission.manageUsers, RolePermission.manageUser]],
-  [
-    Role.adminCafeteria,
-    [RolePermission.manageOrder, RolePermission.manageUser],
+export const RoleConfig = {
+  [Role.admin]: [RolePermission.manageUsers, RolePermission.manageUser],
+  [Role.adminCafeteria]: [
+    RolePermission.manageOrder,
+    RolePermission.manageUser,
   ],
-  [Role.staff, [RolePermission.manageUser, RolePermission.placeOrder]],
-]);
+  [Role.staff]: [RolePermission.manageUser, RolePermission.placeOrder],
+};
