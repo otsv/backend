@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { TypegooseModule } from 'nestjs-typegoose';
 import { AppConfigModule } from 'src/common/config/config.module';
-import { AuthController } from 'src/controller/auth/auth.controller';
+import { AuthController } from 'src/controller/auth.controller';
 import { TokenModule } from '../token/token.module';
-import { UserSchema } from '../user/user.entity';
+import { User } from '../user/entities/user.entity';
 import { AuthService } from './auth.service';
 import { JwtAuthStrategy } from './strategy/auth.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
@@ -15,13 +15,7 @@ import { LocalStrategy } from './strategy/local.strategy';
     PassportModule,
     AppConfigModule,
     TokenModule,
-    TokenModule,
-    MongooseModule.forFeature([
-      {
-        name: 'User',
-        schema: UserSchema,
-      },
-    ]),
+    TypegooseModule.forFeature([User]),
   ],
   exports: [AuthService],
   controllers: [AuthController],

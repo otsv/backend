@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AdminController } from 'src/controller/admin/admin.controller';
+import { AdminController } from 'src/controller/admin.controller';
 import { UserModule } from '../user/user.module';
 import { AdminService } from './admin.service';
 

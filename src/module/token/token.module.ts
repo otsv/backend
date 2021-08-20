@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
-import { MongooseModule } from '@nestjs/mongoose';
+import { TypegooseModule } from 'nestjs-typegoose';
 import { AppConfigModule } from 'src/common/config/config.module';
 import { AppConfigService } from 'src/common/config/config.service';
-import { TokenSchema } from './token.entity';
+import { Token } from './entities/token.entity';
 import { TokenService } from './token.service';
 
 @Module({
@@ -17,12 +17,7 @@ import { TokenService } from './token.service';
       imports: [AppConfigModule],
       inject: [AppConfigService],
     }),
-    MongooseModule.forFeature([
-      {
-        name: 'Token',
-        schema: TokenSchema,
-      },
-    ]),
+    TypegooseModule.forFeature([Token]),
   ],
   providers: [TokenService],
   exports: [TokenService],

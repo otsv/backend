@@ -12,7 +12,6 @@ import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { LocalGuard } from 'src/guards/local.guard';
 import { AuthService } from 'src/module/auth/auth.service';
 import { TokenService } from 'src/module/token/token.service';
-import { UserDocument } from 'src/module/user/user.entity';
 
 @Controller('auth')
 export class AuthController {
@@ -42,7 +41,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   async logout(@Req() request: Request) {
-    const user = request.user as UserDocument;
+    const user = request.user as any;
     await this.tokenService.removeRefreshToken(user.id);
   }
 }

@@ -4,19 +4,20 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { TokenDocument } from './token.entity';
 import * as moment from 'moment';
 import { TokenType } from 'src/common/constant/token';
 import { AppConfigService } from 'src/common/config/config.service';
 import * as mongoose from 'mongoose';
+import { InjectModel } from 'nestjs-typegoose';
+import { Token } from './entities/token.entity';
+import { ReturnModelType } from '@typegoose/typegoose';
 
 @Injectable()
 export class TokenService {
   constructor(
     private readonly jwtService: JwtService,
-    @InjectModel('Token') private readonly tokenDoc: Model<TokenDocument>,
+    @InjectModel(Token)
+    private readonly tokenDoc: ReturnModelType<typeof Token>,
     private readonly config: AppConfigService,
   ) {}
 
