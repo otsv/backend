@@ -14,8 +14,8 @@ export class ProductService {
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const createProduct = await this.productDoc.create(createProductDto);
-    return await createProduct.save();
+    const createdProduct = await this.productDoc.create(createProductDto);
+    return await createdProduct.save();
   }
 
   /**
@@ -32,12 +32,24 @@ export class ProductService {
     return products;
   }
 
+  async count() {
+    return await this.productDoc.count();
+  }
+
   async findOne(id: number): Promise<Product> {
     const product = await this.productDoc.findById(id);
     if (!product) {
       throw new NotFoundException();
     }
     return product;
+  }
+
+  async isExisted(name: string): Promise<boolean> {
+    const product = await this.productDoc.findOne({
+      name,
+    });
+
+    return !!product;
   }
 
   async update(

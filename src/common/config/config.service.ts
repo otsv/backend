@@ -14,4 +14,5 @@ export class AppConfigService {
     'JWT_REFRESH_EXPIRATION',
   );
   seederAccount: boolean = this.configService.get('ACCOUNTS_SEEDER');
+  seederProduct: boolean = this.configService.get('PRODUCTS_SEEDER');
 }

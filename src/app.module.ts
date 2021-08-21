@@ -8,6 +8,9 @@ import { UserModule } from './module/user/user.module';
 import { AdminModule } from './module/admin/admin.module';
 import { TokenModule } from './module/token/token.module';
 import { ProductModule } from './module/product/product.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { SeedModule } from './module/seed/seed.module';
 
 @Module({
   imports: [
@@ -18,6 +21,10 @@ import { ProductModule } from './module/product/product.module';
     AdminModule,
     TokenModule,
     ProductModule,
+    SeedModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'public'),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

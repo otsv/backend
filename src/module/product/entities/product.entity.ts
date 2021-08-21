@@ -4,7 +4,7 @@ import toJson from 'src/database/plugin/toJson';
 
 @plugin(toJson)
 export class Product {
-  @prop({ required: true })
+  @prop({ required: true, unique: true })
   name: string;
 
   @prop({ required: true })

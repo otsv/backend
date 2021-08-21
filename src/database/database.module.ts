@@ -11,9 +11,6 @@ import { AppConfigService } from 'src/common/config/config.service';
       useFactory: (config: AppConfigService) => ({
         uri: config.databaseUrl,
         useNewUrlParser: true,
-        connectionFactory: (connection) => {
-          return connection;
-        },
       }),
       inject: [AppConfigService],
     }),

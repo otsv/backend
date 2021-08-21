@@ -34,31 +34,11 @@ export class UserService {
     return this.userDoc.paginate(filter, options);
   }
 
-  async isEmailTaken(email: string, excludeEmail?: string): Promise<boolean> {
+  async isEmailTaken(email: string, excludeUserId?: string): Promise<boolean> {
     const user = await this.userDoc.findOne({
       email,
-      _id: { $ne: excludeEmail },
+      _id: { $ne: excludeUserId },
     });
     return !!user;
-  }
-
-  async seedAccounts() {
-    try {
-      if (this.config.seederAccount) {
-        // eslint-disable-next-line @typescript-eslint/no-var-requires
-        const accounts = require('../../../json/seed_accounts.json');
-
-        accounts.forEach(async (account) => {
-          const isExisted = await this.userDoc.findOne({
-            email: account.email,
-          });
-          if (!isExisted) {
-            await this.userDoc.create(account);
-          }
-        });
-      }
-    } catch (err) {
-      console.error(err);
-    }
   }
 }

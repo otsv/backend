@@ -1,11 +1,48 @@
-import * as Joi from 'joi';
+import { plainToClass } from 'class-transformer';
+import {
+  IsBoolean,
+  IsIn,
+  IsNumber,
+  IsString,
+  validateSync,
+} from 'class-validator';
 
-export const ConfigSchema = Joi.object({
-  MONGO_URL: Joi.string().required(),
-  PORT: Joi.string().required(),
-  NODE_ENV: Joi.string().required().valid('development', 'production'),
-  JWT_SECRET: Joi.string().required(),
-  JWT_ACCESS_EXPIRATION: Joi.string().required(),
-  JWT_REFRESH_EXPIRATION: Joi.string().required(),
-  ACCOUNTS_SEEDER: Joi.string().default('false'),
-});
+class EnvironmentSchema {
+  @IsString()
+  MONGO_URL: string;
+
+  @IsNumber()
+  PORT: number;
+
+  @IsIn(['development', 'production'])
+  NODE_ENV: string;
+
+  @IsString()
+  JWT_SECRET: string;
+
+  @IsString()
+  JWT_ACCESS_EXPIRATION: string;
+
+  @IsString()
+  JWT_REFRESH_EXPIRATION: string;
+
+  @IsBoolean()
+  ACCOUNTS_SEEDER: boolean;
+
+  @IsBoolean()
+  PRODUCTS_SEEDER: boolean;
+}
+
+export function validate(config: Record<string, unknown>) {
+  const validatedConfig = plainToClass(EnvironmentSchema, config, {
+    enableImplicitConversion: true,
+  });
+  const errors = validateSync(validatedConfig, {
+    skipMissingProperties: false,
+  });
+
+  if (errors.length > 0) {
+    throw new Error(errors.toString());
+  }
+  return validatedConfig;
+}

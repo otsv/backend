@@ -26,7 +26,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @RequiredPermissions(RolePermission.manageOrder)
+  @RequiredPermissions(RolePermission.manageOrders)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productService.create(createProductDto);
   }
@@ -41,19 +41,19 @@ export class ProductController {
   }
 
   @Get(':id')
-  @RequiredPermissions(RolePermission.manageOrder)
+  @RequiredPermissions(RolePermission.manageOrders)
   findOne(@Param('id') id: string) {
     return this.productService.findOne(+id);
   }
 
   @Patch(':id')
-  @RequiredPermissions(RolePermission.manageOrder)
+  @RequiredPermissions(RolePermission.manageOrders)
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
     return this.productService.update(+id, updateProductDto);
   }
 
   @Delete(':id')
-  @RequiredPermissions(RolePermission.manageOrder)
+  @RequiredPermissions(RolePermission.manageOrders)
   remove(@Param('id') id: string) {
     return this.productService.remove(+id);
   }

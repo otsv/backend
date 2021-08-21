@@ -1,7 +1,6 @@
 export enum RolePermission {
   manageUsers,
-  manageUser,
-  manageOrder,
+  manageOrders,
   placeOrder,
 }
 
@@ -12,10 +11,7 @@ export enum Role {
 }
 
 export const RoleConfig = {
-  [Role.admin]: [RolePermission.manageUsers, RolePermission.manageUser],
-  [Role.adminCafeteria]: [
-    RolePermission.manageOrder,
-    RolePermission.manageUser,
-  ],
-  [Role.staff]: [RolePermission.manageUser, RolePermission.placeOrder],
+  [Role.admin]: [RolePermission.manageUsers],
+  [Role.adminCafeteria]: [RolePermission.manageOrders],
+  [Role.staff]: [RolePermission.placeOrder],
 };

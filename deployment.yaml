@@ -42,6 +42,8 @@ spec:
               value: "30"
             - name: ACCOUNTS_SEEDER
               value: "true"
+            - name: PRODUCTS_SEEDER
+              value: "true"
       imagePullSecrets:
         - name: github-pull-secret 
   
