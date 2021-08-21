@@ -31,6 +31,9 @@ class EnvironmentSchema {
 
   @IsBoolean()
   PRODUCTS_SEEDER: boolean;
+
+  @IsBoolean()
+  PRODUCT_TYPE_SEEDER: boolean;
 }
 
 export function validate(config: Record<string, unknown>) {

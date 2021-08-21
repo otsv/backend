@@ -41,7 +41,7 @@ export class ProductController {
   @Public()
   @ApiResponse({ type: PaginationResult })
   async findAll(@Query() query: QueryProductsDto) {
-    const filter = pick(query, ['name', 'price']);
+    const filter = pick(query, ['name', 'price', 'type']);
     const options = pick(query, ['sortBy', 'limit', 'page']);
 
     return await this.productService.queryProducts(filter, options);
@@ -51,7 +51,7 @@ export class ProductController {
   @Public()
   @ApiResponse({ type: Product })
   findOne(@Param('id') id: string): Promise<Product> {
-    return this.productService.findOne(+id);
+    return this.productService.findOne(id);
   }
 
   @Patch(':id')
@@ -62,7 +62,7 @@ export class ProductController {
     @Param('id') id: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    return this.productService.update(+id, updateProductDto);
+    return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
@@ -70,6 +70,6 @@ export class ProductController {
   @ApiBearerAuth()
   @ApiResponse({ type: Product })
   remove(@Param('id') id: string): Promise<Product> {
-    return this.productService.remove(+id);
+    return this.productService.remove(id);
   }
 }

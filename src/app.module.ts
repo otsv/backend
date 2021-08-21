@@ -11,6 +11,7 @@ import { ProductModule } from './module/product/product.module';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SeedModule } from './module/seed/seed.module';
+import { ProductTypeModule } from './module/product-type/product-type.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SeedModule } from './module/seed/seed.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'public'),
     }),
+    ProductTypeModule,
   ],
   controllers: [AppController],
   providers: [AppService],

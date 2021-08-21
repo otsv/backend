@@ -1,40 +1,70 @@
 [
-    {
-        "name": "Black coffee",
-        "images": [
-            "andrew-neel-Zgq3cqztoLI-unsplash.jpeg",
-            "jeff-vanderspank-dMBIpeFiIqs-unsplash.jpeg",
-            "nathan-dumlao-nBJHO6wmRWw-unsplash.jpeg"
-        ],
-        "description" : "Black coffee description",
-        "price" : 19000
-    },
-    {
-        "name": "Milk coffee",
-        "images": [
-            "orlova-maria-Gk3ye8HR1tU-unsplash.jpeg",
-            "farhan-shaikh-galhNYnHRII-unsplash.jpeg",
-            "tabitha-turner-F0Wd4djYvSA-unsplash.jpeg"
-        ],
-        "description" : "Milk coffee description",
-        "price" : 19000
-    },
-    {
-        "name": "Bac xiu",
-        "images": [
-            "alberto-bogo-UvK75Lnv3D4-unsplash.jpeg"
-        ],
-        "description" : "Bac xiu description",
-        "price" : 25000
-    },
-    {
-        "name": "Latte",
-        "images": [
-            "olivia-anne-snyder-R5RtlMOYgX8-unsplash.jpeg",
-            "guy-basabose-FzdEbrA3Qj0-unsplash.jpeg",
-            "ardi-evans-GMuWWR1L-3Q-unsplash.jpeg"
-        ],
-        "description" : "Latte description",
-        "price" : 29000
-    }
+  {
+    "name": "Black coffee",
+    "type": "coffee",
+    "images": [
+      "andrew-neel-Zgq3cqztoLI-unsplash.jpeg",
+      "jeff-vanderspank-dMBIpeFiIqs-unsplash.jpeg",
+      "nathan-dumlao-nBJHO6wmRWw-unsplash.jpeg"
+    ],
+    "description": "Black coffee description",
+    "price": 19000
+  },
+  {
+    "name": "Milk coffee",
+    "type": "coffee",
+    "images": [
+      "orlova-maria-Gk3ye8HR1tU-unsplash.jpeg",
+      "farhan-shaikh-galhNYnHRII-unsplash.jpeg",
+      "tabitha-turner-F0Wd4djYvSA-unsplash.jpeg"
+    ],
+    "description": "Milk coffee description",
+    "price": 19000
+  },
+  {
+    "name": "Bac xiu",
+    "type": "coffee",
+    "images": ["alberto-bogo-UvK75Lnv3D4-unsplash.jpeg"],
+    "description": "Bac xiu description",
+    "price": 25000
+  },
+  {
+    "name": "Latte",
+    "type": "coffee",
+    "images": [
+      "olivia-anne-snyder-R5RtlMOYgX8-unsplash.jpeg",
+      "guy-basabose-FzdEbrA3Qj0-unsplash.jpeg",
+      "ardi-evans-GMuWWR1L-3Q-unsplash.jpeg"
+    ],
+    "description": "Latte description",
+    "price": 29000
+  },
+  {
+    "name": "Mango",
+    "type": "yogurt",
+    "images": ["pariwat-pannium-fysUnQCWvIU-unsplash.jpeg"],
+    "description": "Mango description",
+    "price": 35000
+  },
+  {
+    "name": "Strawberry",
+    "type": "yogurt",
+    "images": ["karly-gomez-lK1Q5RyD6tc-unsplash.jpeg"],
+    "description": "Strawberry description",
+    "price": 35000
+  },
+  {
+    "name": "Fruit",
+    "type": "tea",
+    "images": ["alison-marras-3j2MJ3eOLcs-unsplash.jpeg"],
+    "description": "Fruit description",
+    "price": 29000
+  },
+  {
+    "name": "Guava",
+    "type": "tea",
+    "images": ["ornella-binni-ZoCwTGO8bJI-unsplash.jpeg"],
+    "description": "Guava description",
+    "price": 29000
+  }
 ]

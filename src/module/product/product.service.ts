@@ -5,16 +5,24 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
+import { ProductTypeService } from '../product-type/product-type.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product)
     private readonly productDoc: ReturnModelType<typeof Product>,
+    private readonly productTypeService: ProductTypeService,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const createdProduct = await this.productDoc.create(createProductDto);
+    const type = await this.productTypeService.findByName(
+      createProductDto.type,
+    );
+    const createdProduct = await this.productDoc.create({
+      ...createProductDto,
+      type: type,
+    });
     return await createdProduct.save();
   }
 
@@ -28,7 +36,15 @@ export class ProductService {
    * @returns {Promise<QueryResult>}
    */
   async queryProducts(filter, options: PaginationOption) {
-    const products = await this.productDoc.paginate(filter, options);
+    if (filter.type) {
+      const type = await this.productTypeService.findByName(filter.type);
+      delete filter.type;
+      filter = { ...filter, type };
+    }
+    const products = await this.productDoc.paginate(filter, {
+      ...options,
+      populate: 'type',
+    });
     return products;
   }
 
@@ -36,8 +52,8 @@ export class ProductService {
     return await this.productDoc.count();
   }
 
-  async findOne(id: number): Promise<Product> {
-    const product = await this.productDoc.findById(id);
+  async findOne(id: string): Promise<Product> {
+    const product = await this.productDoc.findById(id).populate('type');
     if (!product) {
       throw new NotFoundException();
     }
@@ -45,18 +61,20 @@ export class ProductService {
   }
 
   async isExisted(name: string): Promise<boolean> {
-    const product = await this.productDoc.findOne({
-      name,
-    });
+    const product = await this.productDoc
+      .findOne({
+        name,
+      })
+      .populate('type');
 
     return !!product;
   }
 
   async update(
-    id: number,
+    id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const product = await this.productDoc.findById(id);
+    const product = await this.productDoc.findById(id).populate('type');
     if (!product) {
       throw new NotFoundException();
     }
@@ -64,8 +82,8 @@ export class ProductService {
     return await product.save();
   }
 
-  async remove(id: number): Promise<Product> {
-    const product = await this.productDoc.findById(id);
+  async remove(id: string): Promise<Product> {
+    const product = await this.productDoc.findById(id).populate('type');
     if (!product) {
       throw new NotFoundException();
     }

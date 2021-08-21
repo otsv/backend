@@ -1,6 +1,6 @@
 import { IsEmail, IsIn, IsString, Validate } from 'class-validator';
 import { Role } from 'src/common/constant/roles';
-import { PasswordContains } from 'src/validation/custom.validation';
+import { PasswordContains } from 'src/validation/password.validation';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {

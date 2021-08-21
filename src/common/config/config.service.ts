@@ -15,4 +15,5 @@ export class AppConfigService {
   );
   seederAccount: boolean = this.configService.get('ACCOUNTS_SEEDER');
   seederProduct: boolean = this.configService.get('PRODUCTS_SEEDER');
+  seederProductType: boolean = this.configService.get('PRODUCT_TYPE_SEEDER');
 }

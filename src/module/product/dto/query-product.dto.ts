@@ -12,4 +12,9 @@ export class QueryProductsDto extends PaginationQuery {
   @IsNumber()
   @ApiPropertyOptional()
   price: number;
+
+  @IsOptional()
+  @IsString()
+  @ApiPropertyOptional()
+  type: string;
 }
