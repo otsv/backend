@@ -9,9 +9,13 @@ import { QueryUsersDto } from 'src/module/user/dto/query-users.dto';
 import { CreateUserDto } from 'src/module/user/dto/create-user.dto';
 import { UserService } from 'src/module/user/user.service';
 import { pick } from 'lodash';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { User } from 'src/module/user/entities/user.entity';
+import { PaginationResult } from 'src/common/constant/pagination.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, PermissionsGuard)
+@ApiTags('admin')
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,
@@ -20,13 +24,17 @@ export class AdminController {
 
   @Post('/create-account')
   @RequiredPermissions(RolePermission.manageUsers)
-  async createAccount(@Body() createAccount: CreateUserDto): Promise<any> {
+  @ApiBearerAuth()
+  @ApiResponse({ type: User })
+  async createAccount(@Body() createAccount: CreateUserDto): Promise<User> {
     const user = await this.userService.createUser(createAccount);
     return user;
   }
 
   @Get('/get-users')
   @RequiredPermissions(RolePermission.manageUsers)
+  @ApiBearerAuth()
+  @ApiResponse({ type: PaginationResult })
   async getUsers(@Query() query: QueryUsersDto) {
     const filter = pick(query, ['role', 'name']);
     const options = pick(query, ['sortBy', 'limit', 'page']);

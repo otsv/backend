@@ -1,8 +1,9 @@
-import { ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { AppConfigService } from './common/config/config.service';
 import { SeedService } from './module/seed/seed.service';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -15,7 +16,21 @@ async function bootstrap() {
     }),
   );
   await app.get(SeedService).seed();
+  buildSwagger(app);
   const config = app.get(AppConfigService);
   await app.listen(config.port);
 }
 bootstrap();
+
+function buildSwagger(app: INestApplication) {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const info = require('../package.json');
+  const config = new DocumentBuilder()
+    .setTitle(info.name)
+    .setDescription(info.description)
+    .setVersion(info.version)
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('docs', app, document);
+}

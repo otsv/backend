@@ -4,6 +4,7 @@ import { Role } from 'src/common/constant/roles';
 import { plugin, pre, prop, ReturnModelType } from '@typegoose/typegoose';
 import toJson from 'src/database/plugin/toJson';
 import paginate from 'src/database/plugin/paginate';
+import { ApiProperty } from '@nestjs/swagger';
 
 @pre<User>('save', async function () {
   if (this.isModified('password')) {
@@ -13,6 +14,7 @@ import paginate from 'src/database/plugin/paginate';
 @plugin(toJson)
 export class User {
   @prop()
+  @ApiProperty()
   name: string;
 
   @prop({
@@ -23,6 +25,7 @@ export class User {
       validator: (value) => validator.isEmail(value),
     },
   })
+  @ApiProperty()
   email: string;
 
   @prop({ required: true, private: true })
@@ -32,7 +35,11 @@ export class User {
     required: true,
     enum: [Role[Role.admin], Role[Role.adminCafeteria], Role[Role.staff]],
   })
+  @ApiProperty({ enum: Role })
   role: string;
+
+  @ApiProperty()
+  id: string;
 
   public static paginate(this: ReturnModelType<typeof User>, filter, options) {
     return paginate.call(this, filter, options);
