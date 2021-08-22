@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { plugin, prop, Ref, ReturnModelType } from '@typegoose/typegoose';
 import paginate from 'src/database/plugin/paginate';
 import toJson from 'src/database/plugin/toJson';
-import { ProductType } from 'src/module/product-type/entities/product-type.entity';
+import { Category } from '../category/entities/category.entity';
 
 @plugin(toJson)
 export class Product {
@@ -25,9 +25,9 @@ export class Product {
   @ApiProperty()
   id: string;
 
-  @prop({ required: true, ref: () => ProductType })
+  @prop({ required: true, ref: () => Category })
   @ApiProperty()
-  type: Ref<ProductType>;
+  type: Ref<Category>;
 
   public static paginate(
     this: ReturnModelType<typeof Product>,

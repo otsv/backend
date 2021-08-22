@@ -5,20 +5,18 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
-import { ProductTypeService } from '../product-type/product-type.service';
+import { CategoryService } from './category/category.service';
 
 @Injectable()
 export class ProductService {
   constructor(
     @InjectModel(Product)
     private readonly productDoc: ReturnModelType<typeof Product>,
-    private readonly productTypeService: ProductTypeService,
+    private readonly categoryService: CategoryService,
   ) {}
 
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const type = await this.productTypeService.findByName(
-      createProductDto.type,
-    );
+    const type = await this.categoryService.findByName(createProductDto.type);
     const createdProduct = await this.productDoc.create({
       ...createProductDto,
       type: type,
@@ -37,7 +35,7 @@ export class ProductService {
    */
   async queryProducts(filter, options: PaginationOption) {
     if (filter.type) {
-      const type = await this.productTypeService.findByName(filter.type);
+      const type = await this.categoryService.findByName(filter.type);
       delete filter.type;
       filter = { ...filter, type };
     }

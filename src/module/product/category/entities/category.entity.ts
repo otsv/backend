@@ -3,7 +3,7 @@ import { plugin, prop } from '@typegoose/typegoose';
 import toJson from 'src/database/plugin/toJson';
 
 @plugin(toJson)
-export class ProductType {
+export class Category {
   @prop({ required: true, unique: true })
   @ApiProperty()
   name: string;

@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppConfigService } from 'src/common/config/config.service';
-import { ProductTypeService } from '../product-type/product-type.service';
+import { CategoryService } from '../product/category/category.service';
 import { ProductService } from '../product/product.service';
 import { UserService } from '../user/user.service';
 
@@ -9,13 +9,13 @@ export class SeedService {
   constructor(
     private readonly userService: UserService,
     private readonly productService: ProductService,
-    private readonly productTypeService: ProductTypeService,
+    private readonly categoryService: CategoryService,
     private readonly configService: AppConfigService,
   ) {}
 
   async seed() {
     await this.seedAccounts();
-    await this.seedProductTypes();
+    await this.seedCategories();
     await this.seedProducts();
   }
 
@@ -47,15 +47,15 @@ export class SeedService {
     }
   }
 
-  private async seedProductTypes() {
-    if (this.configService.seederProductType) {
+  private async seedCategories() {
+    if (this.configService.seederCategories) {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
       const types = require('../../../json/seed_product_types.json');
 
       types.forEach(async (type) => {
-        const isExisted = await this.productTypeService.isExisted(type.name);
+        const isExisted = await this.categoryService.isExisted(type.name);
         if (!isExisted) {
-          await this.productTypeService.create(type);
+          await this.categoryService.create(type);
         }
       });
     }

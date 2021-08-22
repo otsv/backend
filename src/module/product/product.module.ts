@@ -3,10 +3,10 @@ import { ProductService } from './product.service';
 import { ProductController } from '../../controller/product.controller';
 import { Product } from './entities/product.entity';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { ProductTypeModule } from '../product-type/product-type.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [TypegooseModule.forFeature([Product]), ProductTypeModule],
+  imports: [TypegooseModule.forFeature([Product]), CategoryModule],
   controllers: [ProductController],
   providers: [ProductService],
   exports: [ProductService],
