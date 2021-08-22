@@ -5,9 +5,9 @@ export enum RolePermission {
 }
 
 export enum Role {
-  admin,
-  adminCafeteria,
-  staff,
+  admin = 'admin',
+  adminCafeteria = 'adminCafeteria',
+  staff = 'staff',
 }
 
 export const RoleConfig = {

@@ -12,6 +12,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { SeedModule } from './module/seed/seed.module';
 import { CategoryModule } from './module/product/category/category.module';
+import { OrderModule } from './module/order/order.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { CategoryModule } from './module/product/category/category.module';
       rootPath: join(__dirname, '..', 'public'),
     }),
     CategoryModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

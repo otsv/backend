@@ -33,10 +33,10 @@ export class User {
 
   @prop({
     required: true,
-    enum: [Role[Role.admin], Role[Role.adminCafeteria], Role[Role.staff]],
+    enum: Role,
   })
   @ApiProperty({ enum: Role })
-  role: string;
+  role: Role;
 
   @ApiProperty()
   id: string;

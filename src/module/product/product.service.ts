@@ -39,10 +39,7 @@ export class ProductService {
       delete filter.type;
       filter = { ...filter, type };
     }
-    const products = await this.productDoc.paginate(filter, {
-      ...options,
-      populate: 'type',
-    });
+    const products = await this.productDoc.paginate(filter, options);
     return products;
   }
 
@@ -51,20 +48,17 @@ export class ProductService {
   }
 
   async findOne(id: string): Promise<Product> {
-    const product = await this.productDoc.findById(id).populate('type');
+    const product = await this.productDoc.findById(id);
     if (!product) {
-      throw new NotFoundException();
+      throw new NotFoundException(`The product id ${id} not found`);
     }
     return product;
   }
 
   async isExisted(name: string): Promise<boolean> {
-    const product = await this.productDoc
-      .findOne({
-        name,
-      })
-      .populate('type');
-
+    const product = await this.productDoc.findOne({
+      name,
+    });
     return !!product;
   }
 
@@ -72,7 +66,7 @@ export class ProductService {
     id: string,
     updateProductDto: UpdateProductDto,
   ): Promise<Product> {
-    const product = await this.productDoc.findById(id).populate('type');
+    const product = await this.productDoc.findById(id);
     if (!product) {
       throw new NotFoundException();
     }
@@ -81,7 +75,7 @@ export class ProductService {
   }
 
   async remove(id: string): Promise<Product> {
-    const product = await this.productDoc.findById(id).populate('type');
+    const product = await this.productDoc.findById(id);
     if (!product) {
       throw new NotFoundException();
     }

@@ -5,6 +5,8 @@ import toJson from 'src/database/plugin/toJson';
 import { Category } from '../category/entities/category.entity';
 
 @plugin(toJson)
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+@plugin(require('mongoose-autopopulate'))
 export class Product {
   @prop({ required: true, unique: true })
   @ApiProperty()
@@ -25,7 +27,7 @@ export class Product {
   @ApiProperty()
   id: string;
 
-  @prop({ required: true, ref: () => Category })
+  @prop({ required: true, ref: () => Category, autopopulate: true })
   @ApiProperty()
   type: Ref<Category>;
 

@@ -1,4 +1,4 @@
-import { IsEmail, IsIn, IsString, Validate } from 'class-validator';
+import { IsEmail, IsEnum, IsString, Validate } from 'class-validator';
 import { Role } from 'src/common/constant/roles';
 import { PasswordContains } from 'src/validation/password.validation';
 import { ApiProperty } from '@nestjs/swagger';
@@ -19,6 +19,6 @@ export class CreateUserDto {
   @ApiProperty({
     enum: Role,
   })
-  @IsIn(Object.keys(Role))
+  @IsEnum(Role)
   role: string;
 }

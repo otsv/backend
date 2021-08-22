@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AppConfigService } from 'src/common/config/config.service';
@@ -40,5 +44,21 @@ export class UserService {
       _id: { $ne: excludeUserId },
     });
     return !!user;
+  }
+
+  async findUserById(id: string): Promise<User> {
+    const user = await this.userDoc.findById(id);
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
+  }
+
+  async findUserByEmail(email: string): Promise<User> {
+    const user = await this.userDoc.findOne({ email });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+    return user;
   }
 }
