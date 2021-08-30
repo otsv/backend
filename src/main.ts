@@ -4,6 +4,7 @@ import { AppModule } from './app.module';
 import { AppConfigService } from './common/config/config.service';
 import { SeedService } from './module/seed/seed.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+import * as info from 'package.json';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -23,8 +24,6 @@ async function bootstrap() {
 bootstrap();
 
 function buildSwagger(app: INestApplication) {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const info = require('../package.json');
   const config = new DocumentBuilder()
     .setTitle(info.name)
     .setDescription(info.description)

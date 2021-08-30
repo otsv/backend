@@ -1,10 +1,13 @@
-import * as bcrypt from 'bcrypt';
-import validator from 'validator';
-import { Role } from 'src/common/constant/roles';
-import { plugin, pre, prop, ReturnModelType } from '@typegoose/typegoose';
-import toJson from 'src/database/plugin/toJson';
-import paginate from 'src/database/plugin/paginate';
 import { ApiProperty } from '@nestjs/swagger';
+import { plugin, pre, prop, ReturnModelType } from '@typegoose/typegoose';
+import * as bcrypt from 'bcrypt';
+import { Schema } from 'mongoose';
+import { Role } from 'src/common/constant/roles';
+import paginate from 'src/database/plugin/paginate';
+import toJson from 'src/database/plugin/toJson';
+import { Role as RoleEntity } from 'src/module/roles/roles.entity';
+import validator from 'validator';
+import { UserStatus } from '../../../common/constant/user-status';
 
 @pre<User>('save', async function () {
   if (this.isModified('password')) {
@@ -13,6 +16,9 @@ import { ApiProperty } from '@nestjs/swagger';
 })
 @plugin(toJson)
 export class User {
+  @ApiProperty()
+  id: string;
+
   @prop()
   @ApiProperty()
   name: string;
@@ -33,15 +39,21 @@ export class User {
 
   @prop({
     required: true,
-    enum: Role,
+    type: Schema.Types.ObjectId,
+    ref: () => RoleEntity,
   })
   @ApiProperty({ enum: Role })
-  role: Role;
+  role: RoleEntity;
 
-  @ApiProperty()
-  id: string;
+  @prop({ required: true })
+  @ApiProperty({ enum: UserStatus })
+  status: string;
 
   public static paginate(this: ReturnModelType<typeof User>, filter, options) {
     return paginate.call(this, filter, options);
+  }
+
+  constructor(partial: Partial<User>) {
+    Object.assign(this, partial);
   }
 }

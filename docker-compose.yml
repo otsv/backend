@@ -3,27 +3,41 @@ version: '3.4'
 services:
   ostvcafeteria:
     image: ostvcafeteria-backend:latest
-    environment: 
+    environment:
       - NODE_ENV=${NODE_ENV}
       - MONGO_URL=mongodb://mongo:27017:cafeteria
       - PORT=${PORT}
       - JWT_SECRET=${JWT_SECRET}
+      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
       - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
       - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
       - ACCOUNTS_SEEDER=${ACCOUNTS_SEEDER}
     ports:
-      - "${PORT}:${PORT}"
+      - '${PORT}:${PORT}'
     restart: unless-stopped
-    depends_on: 
+    depends_on:
       - mongo
-  
+      - redis
 
   mongo:
-    image: mongo:4.0
-    volumes: 
-      - storage/:/data/db
+    image: mongo:5.0
     restart: unless-stopped
+    env_file:
+      - .env
     ports:
-      - 27017:27017
+      - '27017:27017'
+    volumes:
+      - storage/:/data/db
+
+  redis:
+    image: redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-storage/:/data
+
 volumes:
   storage:
+  redis-storage:

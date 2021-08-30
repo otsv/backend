@@ -1,0 +1,19 @@
+#!/bin/bash
+
+[[ -z ${MONGO_USERNAME} ]] && echo "MONGO_USERNAME is required!" && exit 0;
+[[ -z ${MONGO_PASSWORD} ]] && echo "MONGO_PASSWORD is required!" && exit 0;
+[[ -z ${MONGO_DBHOST} ]] && echo "MONGO_DBHOST is required!" && exit 0;
+[[ -z ${MONGO_DBPORT} ]] && echo "MONGO_DBPORT is required!" && exit 0;
+[[ -z ${MONGO_DBNAME} ]] && echo "MONGO_DBNAME is required!" && exit 0;
+
+[[ -z ${ROOT_USER_EMAIL} ]] && echo "ROOT_USER_EMAIL is required!" && exit 0;
+[[ -z ${ROOT_USER_PASSWORD} ]] && echo "ROOT_USER_PASSWORD is required!, remember to use bcrypt to hash password before export" && exit 0;
+
+mongosh \
+  --host ${MONGO_DBHOST} \
+  --port ${MONGO_DBPORT} \
+  -u ${MONGO_USERNAME} \
+  -p ${MONGO_PASSWORD} \
+  --authenticationDatabase admin \
+  ${MONGO_DBNAME} \
+  scripts/migrate-role.js scripts/migrate-user.js

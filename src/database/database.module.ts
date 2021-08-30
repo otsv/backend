@@ -11,6 +11,14 @@ import { AppConfigService } from 'src/common/config/config.service';
       useFactory: (config: AppConfigService) => ({
         uri: config.databaseUrl,
         useNewUrlParser: true,
+        user: config.databaseUsername,
+        pass: config.databasePassword,
+        dbName: config.databaseName,
+        useCreateIndex: true,
+        useUnifiedTopology: true,
+        auth: {
+          authSource: 'admin',
+        },
       }),
       inject: [AppConfigService],
     }),

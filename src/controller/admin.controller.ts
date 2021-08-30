@@ -1,37 +1,39 @@
 import { Body, Controller, Get, Post, Query, UseGuards } from '@nestjs/common';
-import { RolePermission } from 'src/common/constant/roles';
-import { RequiredPermissions } from 'src/decorator/roles.decorator';
-import { JwtAuthGuard } from 'src/guards/auth.guard';
-import { PermissionsGuard } from 'src/guards/permission.guard';
-import { AdminService } from 'src/module/admin/admin.service';
-import { QueryUsersDto } from 'src/module/user/dto/query-users.dto';
-import { CreateUserDto } from 'src/module/user/dto/create-user.dto';
-import { UserService } from 'src/module/user/user.service';
-import { pick } from 'lodash';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { User } from 'src/module/user/entities/user.entity';
+import { pick } from 'lodash';
 import { PaginationResult } from 'src/common/constant/pagination.dto';
+import { Role } from 'src/common/constant/roles';
+import { Acl } from 'src/decorator/acl.decorator';
+import { AclGuard } from 'src/guards/acl.guard';
+import { JwtAuthGuard } from 'src/guards/auth.guard';
+import { AdminService } from 'src/module/admin/admin.service';
+import { CreateUserDto } from 'src/module/user/dto/create-user.dto';
+import { QueryUsersDto } from 'src/module/user/dto/query-users.dto';
+import { User } from 'src/module/user/entities/user.entity';
+import { UserService } from 'src/module/user/user.service';
+import { ResponseUserWithoutPassword } from 'src/module/user/user.type';
 
 @Controller('admin')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
-@ApiTags('admin')
+@UseGuards(JwtAuthGuard, AclGuard)
+@ApiTags('Admin')
 export class AdminController {
   constructor(
     private readonly adminService: AdminService,
     private readonly userService: UserService,
   ) {}
 
-  @Post('/create-account')
-  @RequiredPermissions(RolePermission.manageUsers)
+  @Post('/accounts')
+  @Acl(Role.Admin)
   @ApiBearerAuth()
   @ApiResponse({ type: User })
-  async createAccount(@Body() createAccount: CreateUserDto): Promise<User> {
-    const user = await this.userService.createUser(createAccount);
-    return user;
+  async createAccount(
+    @Body() createAccount: CreateUserDto,
+  ): Promise<ResponseUserWithoutPassword> {
+    return await this.userService.createUser(createAccount);
   }
 
-  @Get('/get-users')
-  @RequiredPermissions(RolePermission.manageUsers)
+  @Get('/accounts')
+  @Acl(Role.Admin)
   @ApiBearerAuth()
   @ApiResponse({ type: PaginationResult })
   async getUsers(@Query() query: QueryUsersDto) {
