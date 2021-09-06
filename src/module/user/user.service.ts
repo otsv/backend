@@ -4,25 +4,36 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { ReturnModelType } from '@typegoose/typegoose';
+import { omit } from 'lodash';
 import { InjectModel } from 'nestjs-typegoose';
 import { AppConfigService } from 'src/common/config/config.service';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
+import { RoleService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
+import { ResponseUserWithoutPassword } from './user.type';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User) private readonly userDoc: ReturnModelType<typeof User>,
     private readonly config: AppConfigService,
+    private readonly roleService: RoleService,
   ) {}
 
-  async createUser(user: CreateUserDto): Promise<User> {
+  async createUser(user: CreateUserDto): Promise<ResponseUserWithoutPassword> {
     if (await this.isEmailTaken(user.email)) {
       throw new BadRequestException('Email already taken');
     }
-    const createdUser = await this.userDoc.create(user);
-    return await createdUser.save();
+
+    const role = await this.roleService.filterRoleByName(user.role);
+    const createdUser = await this.userDoc.create({
+      ...user,
+      role,
+    });
+    const response = { ...user, id: createdUser._id, role: role.name };
+
+    return omit(response, ['password']);
   }
 
   /**
@@ -48,9 +59,11 @@ export class UserService {
 
   async findUserById(id: string): Promise<User> {
     const user = await this.userDoc.findById(id);
+
     if (!user) {
       throw new NotFoundException('User not found');
     }
+
     return user;
   }
 

@@ -18,13 +18,16 @@ class EnvironmentSchema {
   NODE_ENV: string;
 
   @IsString()
-  JWT_SECRET: string;
+  JWT_ACCESS_SECRET: string;
 
   @IsString()
-  JWT_ACCESS_EXPIRATION: string;
+  JWT_REFRESH_SECRET: string;
 
-  @IsString()
-  JWT_REFRESH_EXPIRATION: string;
+  @IsNumber()
+  JWT_ACCESS_EXPIRATION: number;
+
+  @IsNumber()
+  JWT_REFRESH_EXPIRATION: number;
 
   @IsBoolean()
   ACCOUNTS_SEEDER: boolean;

@@ -1,74 +1,43 @@
-import {
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
-  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { LocalGuard } from 'src/guards/local.guard';
 import { AuthService } from 'src/module/auth/auth.service';
+import { Jwt, JwtRefreshTokenDto } from 'src/module/auth/dto/jwt.dto';
 import { LoginDto } from 'src/module/auth/dto/login.dto';
-import { TokenService } from 'src/module/token/token.service';
-import { User } from 'src/module/user/entities/user.entity';
+import { UserWithoutPassword } from 'src/module/user/user.type';
 
 @Controller('auth')
-@ApiTags('auth')
+@ApiTags('Authenticate')
 export class AuthController {
-  constructor(
-    private readonly authService: AuthService,
-    private readonly tokenService: TokenService,
-  ) {}
+  constructor(private readonly authService: AuthService) {}
 
   @Post('/login')
   @UseGuards(LocalGuard)
   @ApiBody({ type: LoginDto })
-  @ApiCreatedResponse({
-    schema: {
-      type: 'object',
-      properties: {
-        accessToken: {
-          type: 'string',
-        },
-        refreshToken: {
-          type: 'string',
-        },
-      },
-    },
-  })
-  async login(@Req() request: Request) {
+  @ApiCreatedResponse({ type: Jwt })
+  async login(@Req() request: Request): Promise<Jwt> {
     const user = request.user;
-    const token = await this.tokenService.generateAuthToken(user);
-    return {
-      ...token,
-    };
+    return await this.authService.login(user);
   }
 
-  @Get('/user')
+  @Delete('/logout')
   @UseGuards(JwtAuthGuard)
-  @ApiBearerAuth()
-  @ApiResponse({ type: User })
-  async getUser(@Req() request: Request) {
-    const user = request.user;
-    return { user };
-  }
-
-  @Post('/logout')
-  @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.OK)
   @ApiBearerAuth()
   async logout(@Req() request: Request) {
-    const user = request.user as any;
-    await this.tokenService.removeRefreshToken(user.id);
+    const user = request.user as UserWithoutPassword;
+    return await this.authService.logout(user);
+  }
+
+  @Post('/refresh-token')
+  @ApiBody({ type: JwtRefreshTokenDto })
+  async refreshToken(@Body() refreshTokenDto: JwtRefreshTokenDto) {
+    return await this.authService.refreshAccessToken(refreshTokenDto);
   }
 }

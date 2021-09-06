@@ -1,34 +1,34 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
-  Req,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { OrderService } from '../module/order/order.service';
+import { pick } from 'lodash';
+import { PaginationResult } from 'src/common/constant/pagination.dto';
+import { Role } from 'src/common/constant/roles';
+import { Acl } from 'src/decorator/acl.decorator';
+import { AclGuard } from 'src/guards/acl.guard';
+import { JwtAuthGuard } from 'src/guards/auth.guard';
+import { QueryOrderDto } from 'src/module/order/dto/query-order.dto';
+import { User } from 'src/module/user/entities/user.entity';
+import { UserService } from 'src/module/user/user.service';
 import { CreateOrderDto } from '../module/order/dto/create-order.dto';
 import { UpdateOrderDto } from '../module/order/dto/update-order.dto';
-import { JwtAuthGuard } from 'src/guards/auth.guard';
-import { PermissionsGuard } from 'src/guards/permission.guard';
-import { RequiredPermissions } from 'src/decorator/roles.decorator';
-import { RolePermission } from 'src/common/constant/roles';
-import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Order } from '../module/order/entities/order.entity';
-import { User } from 'src/module/user/entities/user.entity';
-import { PaginationResult } from 'src/common/constant/pagination.dto';
-import { QueryOrderDto } from 'src/module/order/dto/query-order.dto';
-import { pick } from 'lodash';
-import { UserService } from 'src/module/user/user.service';
+import { OrderService } from '../module/order/order.service';
 
-@Controller('order')
-@UseGuards(JwtAuthGuard, PermissionsGuard)
-@ApiTags('order')
+@Controller('orders')
+@UseGuards(JwtAuthGuard, AclGuard)
+@ApiTags('Order')
 export class OrderController {
   constructor(
     private readonly orderService: OrderService,
@@ -37,7 +37,7 @@ export class OrderController {
 
   @Post()
   @ApiBearerAuth()
-  @RequiredPermissions(RolePermission.placeOrder)
+  @Acl(Role.Employee)
   @ApiResponse({ type: Order })
   create(
     @Body() createOrderDto: CreateOrderDto,
@@ -47,9 +47,9 @@ export class OrderController {
     return this.orderService.create(createOrderDto, user);
   }
 
-  @Get('/my-orders')
+  @Get('/me')
   @ApiBearerAuth()
-  @RequiredPermissions(RolePermission.placeOrder)
+  @Acl(Role.Employee)
   @ApiResponse({ type: PaginationResult })
   async getMyOrder(@Query() query: QueryOrderDto, @Req() request: Request) {
     const filter = pick(query, ['status']);
@@ -63,7 +63,7 @@ export class OrderController {
 
   @Get()
   @ApiBearerAuth()
-  @RequiredPermissions(RolePermission.manageOrders)
+  @Acl(Role.VendorStaff)
   @ApiResponse({ type: PaginationResult })
   async getOrder(@Query() query: QueryOrderDto) {
     const filter = pick(query, ['status', 'email']);

@@ -41,12 +41,16 @@ export class PaginationOption {
 export class PaginationResult {
   @ApiProperty()
   page: number;
+
   @ApiProperty()
   limit: number;
+
   @ApiProperty()
   totalPages: number;
+
   @ApiProperty()
   totalResults: number;
+
   @ApiProperty()
   results: any[];
 }

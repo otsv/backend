@@ -1,35 +1,41 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, ExtractJwt } from 'passport-jwt';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppConfigService } from 'src/common/config/config.service';
-import { TokenType } from 'src/common/constant/token';
-import { TokenService } from 'src/module/token/token.service';
-import { User } from 'src/module/user/entities/user.entity';
+import { UserService } from 'src/module/user/user.service';
+import { UserWithoutPassword } from 'src/module/user/user.type';
 import { AuthService } from '../auth.service';
 
 @Injectable()
 export class JwtAuthStrategy extends PassportStrategy(Strategy) {
   constructor(
+    private readonly userService: UserService,
     private readonly authService: AuthService,
-    private readonly tokenService: TokenService,
     private readonly config: AppConfigService,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      ignoreExpiration: true,
-      secretOrKey: config.jwtSecret,
+      ignoreExpiration: false,
+      secretOrKey: config.jwtAccessSecret,
+      passReqToCallback: true,
     });
   }
 
-  async validate(payload: any): Promise<User> {
-    await this.tokenService.verifyToken(payload);
-    if (payload.tokenType !== TokenType[TokenType.access]) {
-      throw new UnauthorizedException('not a access token');
-    }
-    const user = await this.authService.findUserById(payload.sub);
-    if (!user) {
+  private getAccessTokenFromHeader(bearerToken: string): string {
+    return bearerToken.split('Bearer ')[1];
+  }
+
+  async validate(request: Request, payload: any): Promise<UserWithoutPassword> {
+    const { name, email, status, role, sub: id } = payload;
+    const accessToken = this.getAccessTokenFromHeader(
+      request.headers['authorization'],
+    );
+
+    if (!(await this.authService.isValidAccessToken(id, accessToken))) {
       throw new UnauthorizedException();
     }
+
+    const user = { id, name, email, status, role };
     return user;
   }
 }

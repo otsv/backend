@@ -14,7 +14,12 @@ const deleteAtPath = (obj, path, index) => {
   deleteAtPath(obj[path[index]], path, index + 1);
 };
 
-export default function toJson(schema) {
+function removeDefaultFields(schema) {
+  delete schema.createdAt;
+  delete schema.updatedAt;
+}
+
+export default function toJson(schema, excludes) {
   let transform;
   if (schema.options.toJSON && schema.options.toJSON.transform) {
     transform = schema.options.toJSON.transform;
@@ -31,8 +36,13 @@ export default function toJson(schema) {
       ret.id = ret._id.toString();
       delete ret._id;
       delete ret.__v;
-      delete ret.createdAt;
-      delete ret.updatedAt;
+
+      if (excludes && excludes.length > 0) {
+        excludes.forEach((excludeField) => delete ret[excludeField]);
+      } else {
+        removeDefaultFields(ret);
+      }
+
       if (transform) {
         return transform(doc, ret, options);
       }
