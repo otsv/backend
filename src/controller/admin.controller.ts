@@ -9,9 +9,8 @@ import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { AdminService } from 'src/module/admin/admin.service';
 import { CreateUserDto } from 'src/module/user/dto/create-user.dto';
 import { QueryUsersDto } from 'src/module/user/dto/query-users.dto';
-import { User } from 'src/module/user/entities/user.entity';
+import { ResponseUserDto } from 'src/module/user/dto/response-user.dto';
 import { UserService } from 'src/module/user/user.service';
-import { ResponseUserWithoutPassword } from 'src/module/user/user.type';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AclGuard)
@@ -25,10 +24,10 @@ export class AdminController {
   @Post('/accounts')
   @Acl(Role.Admin)
   @ApiBearerAuth()
-  @ApiResponse({ type: User })
+  @ApiResponse({ type: ResponseUserDto })
   async createAccount(
     @Body() createAccount: CreateUserDto,
-  ): Promise<ResponseUserWithoutPassword> {
+  ): Promise<ResponseUserDto> {
     return await this.userService.createUser(createAccount);
   }
 

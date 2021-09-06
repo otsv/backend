@@ -4,7 +4,7 @@ import { Role } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
-import { ResponseInterceptor } from 'src/Interceptors/response.interceptor';
+import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
 import { RoleService } from 'src/module/roles/roles.service';
 
 @Controller('roles')

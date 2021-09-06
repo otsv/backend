@@ -11,7 +11,7 @@ import { LocalGuard } from 'src/guards/local.guard';
 import { AuthService } from 'src/module/auth/auth.service';
 import { Jwt, JwtRefreshTokenDto } from 'src/module/auth/dto/jwt.dto';
 import { LoginDto } from 'src/module/auth/dto/login.dto';
-import { UserWithoutPassword } from 'src/module/user/user.type';
+import { User } from 'src/module/user/entities/user.entity';
 
 @Controller('auth')
 @ApiTags('Authenticate')
@@ -31,7 +31,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async logout(@Req() request: Request) {
-    const user = request.user as UserWithoutPassword;
+    const user = request.user as User;
     return await this.authService.logout(user);
   }
 
