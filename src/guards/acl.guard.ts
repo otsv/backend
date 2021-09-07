@@ -15,7 +15,7 @@ export class AclGuard implements CanActivate {
     }
 
     const { user } = context.switchToHttp().getRequest();
-    const userRole = <Role>user.role;
+    const userRole = user.role.name;
 
     return roles.includes(userRole);
   }

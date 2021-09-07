@@ -7,6 +7,7 @@ import paginate from 'src/database/plugin/paginate';
 import toJson from 'src/database/plugin/toJson';
 import { Role as RoleEntity } from 'src/module/roles/roles.entity';
 import validator from 'validator';
+import * as autopopulate from 'mongoose-autopopulate';
 import { UserStatus } from '../../../common/constant/user-status';
 
 @pre<User>('save', async function () {
@@ -14,7 +15,7 @@ import { UserStatus } from '../../../common/constant/user-status';
     this.set('password', await bcrypt.hash(this.get('password'), 8));
   }
 })
-@plugin(toJson)
+@plugin(toJson, autopopulate)
 export class User {
   @ApiProperty()
   id: string;
@@ -41,6 +42,7 @@ export class User {
     required: true,
     type: Schema.Types.ObjectId,
     ref: () => RoleEntity,
+    autopopulate: true,
   })
   @ApiProperty({ enum: Role })
   role: RoleEntity;

@@ -11,7 +11,6 @@ import { InjectModel } from 'nestjs-typegoose';
 import { AppConfigService } from 'src/common/config/config.service';
 import { RedisService } from '../redis/redis.service';
 import { User } from '../user/entities/user.entity';
-import { UserWithoutPassword } from '../user/user.type';
 import { Jwt, JwtRefreshTokenDto } from './dto/jwt.dto';
 
 @Injectable()
@@ -106,7 +105,7 @@ export class AuthService {
       name,
       email,
       status,
-      sub: user._id,
+      sub: user._id.toString(),
       role: user.role.name,
     };
 
@@ -119,9 +118,9 @@ export class AuthService {
     }
   }
 
-  async logout(user: UserWithoutPassword): Promise<Record<string, string>> {
+  async logout({ id: userId }): Promise<Record<string, string>> {
     try {
-      await this.redisService.delete(user.id);
+      await this.redisService.delete(userId);
       return { message: 'Logged out!' };
     } catch (e) {
       throw new UnauthorizedException(e.message);

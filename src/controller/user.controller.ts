@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
-import { ResponseInterceptor } from 'src/Interceptors/response.interceptor';
+import { ResponseInterceptor } from 'src/interceptors/response.interceptor';
 import { UserService } from 'src/module/user/user.service';
 import { ParseObjectId } from 'src/pipes/object-id.pipe';
 

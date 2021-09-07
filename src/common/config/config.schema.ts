@@ -37,6 +37,24 @@ class EnvironmentSchema {
 
   @IsBoolean()
   CATEGORY_SEEDER: boolean;
+
+  @IsString()
+  MONGO_INITDB_ROOT_USERNAME: string;
+
+  @IsString()
+  MONGO_INITDB_ROOT_PASSWORD: string;
+
+  @IsString()
+  MONGO_INITDB_DATABASE: string;
+
+  @IsString()
+  REDIS_HOST: string;
+
+  @IsString()
+  REDIS_PORT: string;
+
+  @IsString()
+  REDIS_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {
