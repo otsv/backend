@@ -23,6 +23,7 @@ export class AppConfigService {
   redisHost: string = this.configService.get('REDIS_HOST');
   redisPort: number = this.configService.get('REDIS_PORT');
   redisPassword: string = this.configService.get('REDIS_PASSWORD');
+  redisDB: string = this.configService.get('REDIS_DB');
 
   // JWT
   jwtAccessSecret: string = this.configService.get('JWT_ACCESS_SECRET');
