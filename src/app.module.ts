@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AppConfigModule } from './common/config/config.module';
 import { DatabaseModule } from './database/database.module';
@@ -7,11 +6,12 @@ import { AuthModule } from './module/auth/auth.module';
 import { UserModule } from './module/user/user.module';
 import { AdminModule } from './module/admin/admin.module';
 import { ProductModule } from './module/product/product.module';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
 import { SeedModule } from './module/seed/seed.module';
 import { CategoryModule } from './module/product/category/category.module';
 import { OrderModule } from './module/order/order.module';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { AppController } from './app.controller';
 
 @Module({
   imports: [
@@ -23,7 +23,7 @@ import { OrderModule } from './module/order/order.module';
     ProductModule,
     SeedModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'public'),
+      rootPath: join(__dirname, 'public'),
     }),
     CategoryModule,
     OrderModule,

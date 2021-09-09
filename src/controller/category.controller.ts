@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/common/constant/roles';
+import { RoleEnum } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { Public } from 'src/decorator/public.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
@@ -26,7 +26,7 @@ export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
   @Post()
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Category })
   create(@Body() createCategoryDto: CreateCategoryDto) {
@@ -47,7 +47,7 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Category })
   update(
@@ -58,7 +58,7 @@ export class CategoryController {
   }
 
   @Delete(':id')
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Category })
   remove(@Param('id') id: string) {

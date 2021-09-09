@@ -7,6 +7,7 @@ import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { AppConfigService } from 'src/common/config/config.service';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
+import { RoleEnum } from 'src/common/constant/roles';
 import { RoleService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
@@ -24,8 +25,7 @@ export class UserService {
     if (await this.isEmailTaken(user.email)) {
       throw new BadRequestException('Email already taken');
     }
-
-    const role = await this.roleService.filterRoleByName(user.role);
+    const role = await this.roleService.getRole(RoleEnum[user.role]);
     const createdUser = await this.userDoc.create({
       ...user,
       role,

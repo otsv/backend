@@ -35,3 +35,6 @@ lerna-debug.log*
 .history
 .env
 !.env.sample
+
+src/public/avatar/*
+!src/public/avatar/.gitkeep

@@ -1,6 +1,16 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsEnum, IsString, Validate } from 'class-validator';
-import { Role } from 'src/common/constant/roles';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  IsEmail,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsPhoneNumber,
+  IsString,
+  Max,
+  Min,
+  Validate,
+} from 'class-validator';
+import { RoleEnum } from 'src/common/constant/roles';
 import { PasswordContains } from 'src/validation/password.validation';
 import { UserStatus } from '../../../common/constant/user-status';
 
@@ -18,13 +28,29 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsEnum(Role)
+  @IsEnum(RoleEnum)
   @ApiProperty({
-    enum: Role,
+    enum: RoleEnum,
   })
   role: string;
 
   @IsEnum(UserStatus)
+  @IsOptional()
   @ApiProperty({ enum: UserStatus })
   status: string;
+
+  @IsOptional()
+  @IsPhoneNumber()
+  @ApiPropertyOptional({ nullable: true })
+  phone?: string;
+
+  @ApiPropertyOptional({ nullable: true, description: 'mutilpart file' })
+  avatar?: string;
+
+  @IsNumber({ allowInfinity: false, allowNaN: false })
+  @IsOptional()
+  @Min(0)
+  @Max(99)
+  @ApiPropertyOptional({ default: 1 })
+  dailyBalance: number;
 }

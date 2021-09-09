@@ -1,6 +1,7 @@
 import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
+
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Role } from 'src/common/constant/roles';
+import { RoleEnum } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
@@ -14,7 +15,7 @@ export class RoleController {
   constructor(private readonly roleService: RoleService) {}
 
   @Get()
-  @Acl(Role.Admin)
+  @Acl(RoleEnum.admin)
   @UseInterceptors(ResponseInterceptor)
   @ApiBearerAuth()
   async getAllRoles() {

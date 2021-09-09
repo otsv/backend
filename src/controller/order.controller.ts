@@ -14,7 +14,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { pick } from 'lodash';
 import { PaginationResult } from 'src/common/constant/pagination.dto';
-import { Role } from 'src/common/constant/roles';
+import { RoleEnum } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
@@ -37,7 +37,7 @@ export class OrderController {
 
   @Post()
   @ApiBearerAuth()
-  @Acl(Role.Employee)
+  @Acl(RoleEnum.employee)
   @ApiResponse({ type: Order })
   create(
     @Body() createOrderDto: CreateOrderDto,
@@ -49,7 +49,7 @@ export class OrderController {
 
   @Get('/me')
   @ApiBearerAuth()
-  @Acl(Role.Employee)
+  @Acl(RoleEnum.employee)
   @ApiResponse({ type: PaginationResult })
   async getMyOrder(@Query() query: QueryOrderDto, @Req() request: Request) {
     const filter = pick(query, ['status']);
@@ -63,7 +63,7 @@ export class OrderController {
 
   @Get()
   @ApiBearerAuth()
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiResponse({ type: PaginationResult })
   async getOrder(@Query() query: QueryOrderDto) {
     const filter = pick(query, ['status', 'email']);

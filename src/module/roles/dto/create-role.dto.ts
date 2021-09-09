@@ -1,7 +1,7 @@
-import { Role } from '../../../common/constant/roles';
+import { RoleEnum } from '../../../common/constant/roles';
 import { IsEnum } from 'class-validator';
 
 export class CreateRoleDto {
-  @IsEnum(Role)
+  @IsEnum(RoleEnum)
   role: string;
 }

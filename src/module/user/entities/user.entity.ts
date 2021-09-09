@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 import { plugin, pre, prop, ReturnModelType } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { Schema } from 'mongoose';
-import { Role } from 'src/common/constant/roles';
+import { RoleEnum } from 'src/common/constant/roles';
 import paginate from 'src/database/plugin/paginate';
 import toJson from 'src/database/plugin/toJson';
-import { Role as RoleEntity } from 'src/module/roles/roles.entity';
+import { Role } from 'src/module/roles/roles.entity';
 import validator from 'validator';
 import * as autopopulate from 'mongoose-autopopulate';
 import { UserStatus } from '../../../common/constant/user-status';
@@ -38,18 +38,27 @@ export class User {
   @prop({ required: true, private: true })
   password: string;
 
+  @prop()
+  avatar: string;
+
+  @prop({ required: true, default: 1 })
+  dailyBalance: number;
+
+  @prop()
+  phone: string;
+
   @prop({
     required: true,
     type: Schema.Types.ObjectId,
-    ref: () => RoleEntity,
+    ref: () => Role,
     autopopulate: true,
   })
-  @ApiProperty({ enum: Role })
-  role: RoleEntity;
+  @ApiProperty({ enum: RoleEnum })
+  role: Role;
 
-  @prop({ required: true })
-  @ApiProperty({ enum: UserStatus })
-  status: string;
+  @prop({ required: true, default: UserStatus.Activate })
+  @ApiProperty({ enum: UserStatus, default: UserStatus.Activate })
+  status: UserStatus;
 
   public static paginate(this: ReturnModelType<typeof User>, filter, options) {
     return paginate.call(this, filter, options);

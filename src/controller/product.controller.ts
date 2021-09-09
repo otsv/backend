@@ -12,7 +12,7 @@ import {
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { pick } from 'lodash';
 import { PaginationResult } from 'src/common/constant/pagination.dto';
-import { Role } from 'src/common/constant/roles';
+import { RoleEnum } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { Public } from 'src/decorator/public.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
@@ -30,7 +30,7 @@ export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
   @Post()
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Product })
   create(@Body() createProductDto: CreateProductDto): Promise<Product> {
@@ -55,7 +55,7 @@ export class ProductController {
   }
 
   @Patch(':id')
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Product })
   update(
@@ -66,7 +66,7 @@ export class ProductController {
   }
 
   @Delete(':id')
-  @Acl(Role.VendorStaff)
+  @Acl(RoleEnum.vendor)
   @ApiBearerAuth()
   @ApiResponse({ type: Product })
   remove(@Param('id') id: string): Promise<Product> {

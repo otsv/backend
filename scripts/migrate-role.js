@@ -60,7 +60,7 @@ db.runCommand({
       __v: 0,
     },
     {
-      name: 'vendor staff',
+      name: 'vendor',
       createdAt: new Date(),
       updatedAt: null,
       deletedAt: null,
