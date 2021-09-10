@@ -10,7 +10,7 @@ export class PasswordContains implements ValidatorConstraintInterface {
     password: string,
     validationArguments?: ValidationArguments,
   ): boolean | Promise<boolean> {
-    if (!password.trim()) return false;
+    if (!password || !password.trim()) return false;
 
     return password.length > 6 && password.length < 32;
   }

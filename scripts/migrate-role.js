@@ -10,7 +10,7 @@ db.runCommand({
       required: ['name', '__v'],
       properties: {
         name: {
-          enum: ['admin', 'vendor staff', 'employee'],
+          enum: ['admin', 'vendor', 'employee'],
           description: 'can only be one of the enum values and is required',
         },
         createdAt: {

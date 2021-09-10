@@ -45,6 +45,7 @@ export class CreateUserDto {
   phone?: string;
 
   @ApiPropertyOptional({ nullable: true, description: 'mutilpart file' })
+  @IsOptional()
   avatar?: string;
 
   @IsNumber({ allowInfinity: false, allowNaN: false })

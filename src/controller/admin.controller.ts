@@ -2,7 +2,10 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
+  Param,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseGuards,
@@ -25,6 +28,8 @@ import { ResponseUserDto } from 'src/module/user/dto/response-user.dto';
 import { UserService } from 'src/module/user/user.service';
 import { unlink } from 'fs/promises';
 import * as path from 'path';
+import * as fs from 'fs';
+import { UpdateAccountDto } from 'src/module/admin/dto/update-account.dto';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AclGuard)
@@ -35,7 +40,7 @@ export class AdminController {
     private readonly userService: UserService,
   ) {}
 
-  @Post('/accounts')
+  @Post('/account')
   @Acl(RoleEnum.admin)
   @ApiBearerAuth()
   @ApiResponse({ type: ResponseUserDto })
@@ -54,15 +59,65 @@ export class AdminController {
     @UploadedFile() file: Express.Multer.File,
   ): Promise<ResponseUserDto> {
     try {
-      const user = await this.userService.createUser(
+      if (file) {
         Object.assign(createAccount, {
           avatar: file.filename,
-        }),
-      );
+        });
+      }
+      const user = await this.userService.createUser(createAccount);
       return user;
     } catch (e) {
-      await unlink(file.path);
+      if (file) {
+        await unlink(file.path);
+      }
+
       throw e;
+    }
+  }
+
+  @Put('/account/:userId')
+  @Acl(RoleEnum.admin)
+  @ApiBearerAuth()
+  @UseInterceptors(
+    FileInterceptor(
+      'avatar',
+      multerOptions('avatar', async (req: Request, file, cb) => {
+        //put body in client in order as first
+        const email = req.body.email;
+        if (!email) {
+          cb(new NotFoundException('Email not found'), null);
+        }
+        cb(null, 'temp_' + email + path.extname(file.originalname));
+      }),
+    ),
+  )
+  async updateUser(
+    @Body() updateAccountDto: UpdateAccountDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Param('userId') id: string,
+  ) {
+    try {
+      if (file) {
+        Object.assign(updateAccountDto, {
+          avatar: file.filename.replace('temp_', ''),
+        });
+      }
+      const user = await this.userService.findUserById(id);
+
+      const updatedUser = await this.userService.updateProfile(
+        user,
+        updateAccountDto,
+      );
+
+      if (file) {
+        fs.renameSync(file.path, file.path.replace('temp_', ''));
+      }
+      return updatedUser;
+    } catch (err) {
+      if (file) {
+        await unlink(file.path);
+      }
+      throw err;
     }
   }
 

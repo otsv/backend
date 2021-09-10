@@ -1,17 +1,36 @@
-import { Body, Controller, Delete, Post, Req, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  Post,
+  Put,
+  Req,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiCreatedResponse,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { Request } from 'express';
+import { unlink } from 'fs/promises';
+import * as fs from 'fs';
+import * as path from 'path';
+import { multerOptions } from 'src/common/constant/upload-file.option';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
 import { LocalGuard } from 'src/guards/local.guard';
 import { AuthService } from 'src/module/auth/auth.service';
+import { ChangePasswordDto, UpdateUserDto } from 'src/module/auth/dto/auth.dto';
 import { Jwt, JwtRefreshTokenDto } from 'src/module/auth/dto/jwt.dto';
 import { LoginDto } from 'src/module/auth/dto/login.dto';
-import { User } from 'src/module/user/entities/user.entity';
+import { User, UserDoc } from 'src/module/user/entities/user.entity';
+import { pick } from 'lodash';
 
 @Controller('auth')
 @ApiTags('Authenticate')
@@ -39,5 +58,64 @@ export class AuthController {
   @ApiBody({ type: JwtRefreshTokenDto })
   async refreshToken(@Body() refreshTokenDto: JwtRefreshTokenDto) {
     return await this.authService.refreshAccessToken(refreshTokenDto);
+  }
+
+  @Post('/change-password')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiResponse({ status: 200 })
+  @ApiResponse({ status: 400, description: 'Invalid password' })
+  @HttpCode(200)
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordDto,
+    @Req() request: Request,
+  ) {
+    const user = request.user as UserDoc;
+    return await this.authService.changePassword(
+      user,
+      changePasswordDto.password,
+      changePasswordDto.newPassword,
+    );
+  }
+
+  @Put()
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @UseInterceptors(
+    FileInterceptor(
+      'avatar',
+      multerOptions('avatar', (req: Request, file, cb) => {
+        ///put body in client in order as first
+        const user = req.user as UserDoc;
+        cb(null, 'temp_' + user.email + path.extname(file.originalname));
+      }),
+    ),
+  )
+  async updateProfile(
+    @Body() updateDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
+    @Req() request: Request,
+  ) {
+    try {
+      const user = request.user as UserDoc;
+      if (file) {
+        Object.assign(updateDto, {
+          avatar: file.filename.replace('temp_', ''),
+        });
+      }
+
+      const data = pick(updateDto, ['avatar', 'name', 'phone']);
+      const updatedUser = await this.authService.updateProfile(user, data);
+      if (file) {
+        fs.renameSync(file.path, file.path.replace('temp_', ''));
+      }
+
+      return updatedUser;
+    } catch (err) {
+      if (file) {
+        await unlink(file.path);
+      }
+      throw err;
+    }
   }
 }

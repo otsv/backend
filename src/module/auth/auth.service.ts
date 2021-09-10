@@ -1,5 +1,7 @@
 import {
   BadRequestException,
+  HttpException,
+  HttpStatus,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -10,7 +12,7 @@ import * as moment from 'moment';
 import { InjectModel } from 'nestjs-typegoose';
 import { AppConfigService } from 'src/common/config/config.service';
 import { RedisService } from '../redis/redis.service';
-import { User } from '../user/entities/user.entity';
+import { User, UserDoc } from '../user/entities/user.entity';
 import { Jwt, JwtRefreshTokenDto } from './dto/jwt.dto';
 
 @Injectable()
@@ -156,5 +158,22 @@ export class AuthService {
     } catch (e) {
       throw new BadRequestException(e.message);
     }
+  }
+
+  async changePassword(user: UserDoc, password: string, newPassword: string) {
+    if (!(await bcrypt.compare(password, user.password))) {
+      throw new HttpException(
+        { message: 'Invalid password' },
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
+    Object.assign(user, { password: newPassword });
+    await user.save();
+  }
+
+  async updateProfile(user: UserDoc, updateDto: any): Promise<UserDoc> {
+    Object.assign(user, updateDto);
+    return await user.save();
   }
 }

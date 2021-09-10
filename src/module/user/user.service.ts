@@ -11,7 +11,7 @@ import { RoleEnum } from 'src/common/constant/roles';
 import { RoleService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
-import { User } from './entities/user.entity';
+import { User, UserDoc } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
@@ -57,7 +57,7 @@ export class UserService {
     return !!user;
   }
 
-  async findUserById(id: string): Promise<User> {
+  async findUserById(id: string): Promise<UserDoc> {
     const user = await this.userDoc.findById(id).populate('role');
 
     if (!user) {
@@ -73,5 +73,14 @@ export class UserService {
       throw new NotFoundException('User not found');
     }
     return user;
+  }
+
+  async updateProfile(user: UserDoc, updateDto: any): Promise<UserDoc> {
+    if (updateDto.role) {
+      const role = await this.roleService.getRole(RoleEnum[updateDto.role]);
+      Object.assign(updateDto, { role });
+    }
+    Object.assign(user, updateDto);
+    return await user.save();
   }
 }

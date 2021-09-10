@@ -44,7 +44,7 @@ export class RoleService {
         name: role,
       });
     } catch (e) {
-      throw new MongoException(e);
+      throw new NotFoundException('Role not found');
     }
   }
 }

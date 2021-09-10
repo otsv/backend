@@ -19,6 +19,11 @@ function removeDefaultFields(schema) {
   delete schema.__v;
   delete schema.createdAt;
   delete schema.updatedAt;
+  delete schema.createdBy;
+  delete schema.deletedAt;
+  delete schema.deletedBy;
+  delete schema.updatedBy;
+  delete schema.createdBy;
 }
 
 export default function toJson(schema) {

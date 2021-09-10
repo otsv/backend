@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { plugin, pre, prop, ReturnModelType } from '@typegoose/typegoose';
+import {
+  plugin,
+  pre,
+  prop,
+  ReturnModelType,
+  DocumentType,
+  getModelForClass,
+} from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { Schema } from 'mongoose';
 import { RoleEnum } from 'src/common/constant/roles';
@@ -64,7 +71,16 @@ export class User {
     return paginate.call(this, filter, options);
   }
 
+  public static findByUserId(
+    this: ReturnModelType<typeof User>,
+    userId: string,
+  ) {
+    return this.findById(userId);
+  }
+
   constructor(partial: Partial<User>) {
     Object.assign(this, partial);
   }
 }
+
+export type UserDoc = DocumentType<User>;
