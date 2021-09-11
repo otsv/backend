@@ -5,7 +5,6 @@ import {
   prop,
   ReturnModelType,
   DocumentType,
-  getModelForClass,
 } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { Schema } from 'mongoose';
@@ -63,8 +62,8 @@ export class User {
   @ApiProperty({ enum: RoleEnum })
   role: Role;
 
-  @prop({ required: true, default: UserStatus.Activate })
-  @ApiProperty({ enum: UserStatus, default: UserStatus.Activate })
+  @prop({ required: true, default: UserStatus.activate })
+  @ApiProperty({ enum: UserStatus, default: UserStatus.activate })
   status: UserStatus;
 
   public static paginate(this: ReturnModelType<typeof User>, filter, options) {

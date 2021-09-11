@@ -8,9 +8,12 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { ReturnModelType } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
+import { unlink } from 'fs/promises';
 import * as moment from 'moment';
 import { InjectModel } from 'nestjs-typegoose';
+import * as path from 'path';
 import { AppConfigService } from 'src/common/config/config.service';
+import { avatarPath } from 'src/common/constant/constant';
 import { RedisService } from '../redis/redis.service';
 import { User, UserDoc } from '../user/entities/user.entity';
 import { Jwt, JwtRefreshTokenDto } from './dto/jwt.dto';
@@ -173,6 +176,9 @@ export class AuthService {
   }
 
   async updateProfile(user: UserDoc, updateDto: any): Promise<UserDoc> {
+    if (user.avatar && updateDto.avatar && user.avatar != updateDto.avatar) {
+      await unlink(path.join(avatarPath, user.avatar));
+    }
     Object.assign(user, updateDto);
     return await user.save();
   }

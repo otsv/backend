@@ -20,7 +20,6 @@ import {
 } from '@nestjs/swagger';
 import { Request } from 'express';
 import { unlink } from 'fs/promises';
-import * as fs from 'fs';
 import * as path from 'path';
 import { multerOptions } from 'src/common/constant/upload-file.option';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
@@ -31,6 +30,7 @@ import { Jwt, JwtRefreshTokenDto } from 'src/module/auth/dto/jwt.dto';
 import { LoginDto } from 'src/module/auth/dto/login.dto';
 import { User, UserDoc } from 'src/module/user/entities/user.entity';
 import { pick } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('auth')
 @ApiTags('Authenticate')
@@ -85,9 +85,7 @@ export class AuthController {
     FileInterceptor(
       'avatar',
       multerOptions('avatar', (req: Request, file, cb) => {
-        ///put body in client in order as first
-        const user = req.user as UserDoc;
-        cb(null, 'temp_' + user.email + path.extname(file.originalname));
+        cb(null, uuidv4() + path.extname(file.originalname));
       }),
     ),
   )
@@ -98,17 +96,13 @@ export class AuthController {
   ) {
     try {
       const user = request.user as UserDoc;
+      const data = pick(updateDto, ['name', 'phone']);
       if (file) {
-        Object.assign(updateDto, {
-          avatar: file.filename.replace('temp_', ''),
+        Object.assign(data, {
+          avatar: file.filename,
         });
       }
-
-      const data = pick(updateDto, ['avatar', 'name', 'phone']);
       const updatedUser = await this.authService.updateProfile(user, data);
-      if (file) {
-        fs.renameSync(file.path, file.path.replace('temp_', ''));
-      }
 
       return updatedUser;
     } catch (err) {

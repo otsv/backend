@@ -23,7 +23,7 @@ import { AppController } from './app.controller';
     ProductModule,
     SeedModule,
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, 'public'),
+      rootPath: join(__dirname, '..', '..', 'src', 'public'),
     }),
     CategoryModule,
     OrderModule,

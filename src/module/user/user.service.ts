@@ -12,6 +12,9 @@ import { RoleService } from '../roles/roles.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { ResponseUserDto } from './dto/response-user.dto';
 import { User, UserDoc } from './entities/user.entity';
+import { unlink } from 'fs/promises';
+import * as path from 'path';
+import { avatarPath } from 'src/common/constant/constant';
 
 @Injectable()
 export class UserService {
@@ -46,7 +49,7 @@ export class UserService {
    * @returns {Promise<QueryResult>}
    */
   async getUsers(filter, options: PaginationOption) {
-    return this.userDoc.paginate(filter, options);
+    return this.userDoc.paginate(filter, { ...options, populate: 'role' });
   }
 
   async isEmailTaken(email: string, excludeUserId?: string): Promise<boolean> {
@@ -68,7 +71,7 @@ export class UserService {
   }
 
   async findUserByEmail(email: string): Promise<User> {
-    const user = await this.userDoc.findOne({ email });
+    const user = await this.userDoc.findOne({ email }).populate('role');
     if (!user) {
       throw new NotFoundException('User not found');
     }
@@ -76,6 +79,16 @@ export class UserService {
   }
 
   async updateProfile(user: UserDoc, updateDto: any): Promise<UserDoc> {
+    if (updateDto.email && user.email != updateDto.email) {
+      if (await this.isEmailTaken(updateDto.email)) {
+        throw new BadRequestException('Email already taken');
+      }
+    }
+
+    if (user.avatar && updateDto.avatar && user.avatar != updateDto.avatar) {
+      await unlink(path.join(avatarPath, user.avatar));
+    }
+
     if (updateDto.role) {
       const role = await this.roleService.getRole(RoleEnum[updateDto.role]);
       Object.assign(updateDto, { role });

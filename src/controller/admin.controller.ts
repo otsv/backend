@@ -2,7 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  NotFoundException,
   Param,
   Post,
   Put,
@@ -28,8 +27,8 @@ import { ResponseUserDto } from 'src/module/user/dto/response-user.dto';
 import { UserService } from 'src/module/user/user.service';
 import { unlink } from 'fs/promises';
 import * as path from 'path';
-import * as fs from 'fs';
 import { UpdateAccountDto } from 'src/module/admin/dto/update-account.dto';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AclGuard)
@@ -82,12 +81,7 @@ export class AdminController {
     FileInterceptor(
       'avatar',
       multerOptions('avatar', async (req: Request, file, cb) => {
-        //put body in client in order as first
-        const email = req.body.email;
-        if (!email) {
-          cb(new NotFoundException('Email not found'), null);
-        }
-        cb(null, 'temp_' + email + path.extname(file.originalname));
+        cb(null, uuidv4() + path.extname(file.originalname));
       }),
     ),
   )
@@ -99,7 +93,7 @@ export class AdminController {
     try {
       if (file) {
         Object.assign(updateAccountDto, {
-          avatar: file.filename.replace('temp_', ''),
+          avatar: file.filename,
         });
       }
       const user = await this.userService.findUserById(id);
@@ -108,10 +102,6 @@ export class AdminController {
         user,
         updateAccountDto,
       );
-
-      if (file) {
-        fs.renameSync(file.path, file.path.replace('temp_', ''));
-      }
       return updatedUser;
     } catch (err) {
       if (file) {
