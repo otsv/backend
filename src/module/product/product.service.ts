@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -6,6 +10,10 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Product } from './entities/product.entity';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
 import { CategoryService } from './category/category.service';
+import { UserDoc } from '../user/entities/user.entity';
+import { unlink } from 'fs/promises';
+import * as path from 'path';
+import { drinkPath } from 'src/common/constant/constant';
 
 @Injectable()
 export class ProductService {
@@ -15,13 +23,23 @@ export class ProductService {
     private readonly categoryService: CategoryService,
   ) {}
 
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const type = await this.categoryService.findByName(createProductDto.type);
-    const createdProduct = await this.productDoc.create({
-      ...createProductDto,
-      type: type,
-    });
-    return await createdProduct.save();
+  async create(
+    createProductDto: CreateProductDto,
+    createBy?: UserDoc,
+  ): Promise<Product> {
+    try {
+      const type = await this.categoryService.findByName(createProductDto.type);
+      const createdProduct = await this.productDoc.create({
+        ...createProductDto,
+        type,
+      });
+      if (createBy) {
+        Object.assign(createdProduct, { createdBy: createBy.id });
+      }
+      return await createdProduct.save();
+    } catch (err) {
+      throw new BadRequestException(err.message);
+    }
   }
 
   /**
@@ -65,13 +83,42 @@ export class ProductService {
   async update(
     id: string,
     updateProductDto: UpdateProductDto,
+    updateBy?: UserDoc,
   ): Promise<Product> {
-    const product = await this.productDoc.findById(id);
-    if (!product) {
-      throw new NotFoundException();
+    try {
+      const product = await this.productDoc.findById(id);
+      if (!product) {
+        throw new NotFoundException();
+      }
+      const oldImages = product.images;
+      Object.assign(product, updateProductDto);
+
+      if (updateProductDto.type) {
+        const type = await this.categoryService.findByName(
+          updateProductDto.type,
+        );
+        Object.assign(product, { type });
+      }
+
+      if (updateBy) {
+        Object.assign(product, {
+          updatedBy: updateBy.id,
+          updatedAt: Date.now(),
+        });
+      }
+
+      const updatedProduct = await product.save();
+
+      if (oldImages && updateProductDto.images) {
+        for (const file of oldImages) {
+          await unlink(path.join(drinkPath, file));
+        }
+      }
+
+      return updatedProduct;
+    } catch (err) {
+      throw new BadRequestException(err.message);
     }
-    Object.assign(product, updateProductDto);
-    return await product.save();
   }
 
   async remove(id: string): Promise<Product> {

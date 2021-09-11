@@ -5,7 +5,7 @@ import * as autopopulate from 'mongoose-autopopulate';
 import { User } from '../../module/user/entities/user.entity';
 
 @plugin(autopopulate as any)
-export class BaseClass {
+export class BaseEntity {
   @ApiProperty()
   @prop({ type: Schema.Types.Date, default: Date.now() })
   createdAt: Date;
