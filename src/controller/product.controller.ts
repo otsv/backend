@@ -127,7 +127,7 @@ export class ProductController {
   @Public()
   @ApiResponse({ type: PaginationResult })
   async findAll(@Query() query: QueryProductsDto) {
-    const filter = pick(query, ['name', 'price', 'type']);
+    const filter = pick(query, ['name', 'price', 'type', 'status']);
     const options = pick(query, ['sortBy', 'limit', 'page']);
 
     return await this.productService.queryProducts(filter, options);

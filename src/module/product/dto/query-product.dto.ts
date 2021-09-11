@@ -1,6 +1,7 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNumber, IsOptional, IsString } from 'class-validator';
 import { PaginationQuery } from 'src/common/constant/pagination.dto';
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ProductStatus } from 'src/common/constant/product-status';
 
 export class QueryProductsDto extends PaginationQuery {
   @IsString()
@@ -17,4 +18,9 @@ export class QueryProductsDto extends PaginationQuery {
   @IsString()
   @ApiPropertyOptional()
   type: string;
+
+  @IsOptional()
+  @IsEnum(ProductStatus)
+  @ApiPropertyOptional()
+  status: ProductStatus;
 }
