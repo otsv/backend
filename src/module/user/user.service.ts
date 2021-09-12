@@ -49,6 +49,10 @@ export class UserService {
    * @returns {Promise<QueryResult>}
    */
   async getUsers(filter, options: PaginationOption) {
+    if (filter.role) {
+      const role = await this.roleService.getRole(RoleEnum[filter.role]);
+      Object.assign(filter, { role });
+    }
     return this.userDoc.paginate(filter, { ...options, populate: 'role' });
   }
 

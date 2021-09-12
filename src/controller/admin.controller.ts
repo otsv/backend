@@ -116,7 +116,7 @@ export class AdminController {
   @ApiBearerAuth()
   @ApiResponse({ type: PaginationResult })
   async getUsers(@Query() query: QueryUsersDto) {
-    const filter = pick(query, ['role', 'name']);
+    const filter = pick(query, ['role', 'name', 'status', 'email']);
     const options = pick(query, ['sortBy', 'limit', 'page']);
     return await this.userService.getUsers(filter, options);
   }

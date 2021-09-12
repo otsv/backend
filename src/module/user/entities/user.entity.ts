@@ -5,6 +5,7 @@ import {
   prop,
   ReturnModelType,
   DocumentType,
+  Ref,
 } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { Schema } from 'mongoose';
@@ -60,7 +61,7 @@ export class User {
     autopopulate: true,
   })
   @ApiProperty({ enum: RoleEnum })
-  role: Role;
+  role: Ref<Role>;
 
   @prop({ required: true, default: UserStatus.activate })
   @ApiProperty({ enum: UserStatus, default: UserStatus.activate })

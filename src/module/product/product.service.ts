@@ -54,8 +54,7 @@ export class ProductService {
   async queryProducts(filter, options: PaginationOption) {
     if (filter.type) {
       const type = await this.categoryService.findByName(filter.type);
-      delete filter.type;
-      filter = { ...filter, type };
+      Object.assign(filter, { type });
     }
     const products = await this.productDoc.paginate(filter, options);
     return products;
