@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   Post,
   Put,
@@ -58,6 +59,14 @@ export class AuthController {
   @ApiBody({ type: JwtRefreshTokenDto })
   async refreshToken(@Body() refreshTokenDto: JwtRefreshTokenDto) {
     return await this.authService.refreshAccessToken(refreshTokenDto);
+  }
+
+  @Get('/me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBody({ type: User })
+  async session(@Req() request: Request) {
+    const user = request.user as User;
+    return { user };
   }
 
   @Post('/change-password')
