@@ -7,11 +7,6 @@ services:
       - NODE_ENV=${NODE_ENV}
       - MONGO_URL=mongodb://mongo:27017:cafeteria
       - PORT=${PORT}
-      - JWT_SECRET=${JWT_SECRET}
-      - JWT_REFRESH_SECRET=${JWT_REFRESH_SECRET}
-      - JWT_ACCESS_EXPIRATION=${JWT_ACCESS_EXPIRATION}
-      - JWT_REFRESH_EXPIRATION=${JWT_REFRESH_EXPIRATION}
-      - ACCOUNTS_SEEDER=${ACCOUNTS_SEEDER}
     ports:
       - '${PORT}:${PORT}'
     restart: unless-stopped

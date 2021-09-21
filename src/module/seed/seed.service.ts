@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import * as products from 'json/seed_products.json';
 import * as categories from 'json/seed_product_types.json';
 import { AppConfigService } from 'src/common/config/config.service';
 import { CategoryService } from '../product/category/category.service';
@@ -22,18 +21,6 @@ export class SeedService {
    */
   async seed() {
     await this.seedCategories();
-    await this.seedProducts();
-  }
-
-  private async seedProducts() {
-    if (this.configService.seederProduct) {
-      for (const product of products) {
-        const isExisted = await this.productService.isExisted(product.name);
-        if (!isExisted) {
-          await this.productService.create(product);
-        }
-      }
-    }
   }
 
   private async seedCategories() {

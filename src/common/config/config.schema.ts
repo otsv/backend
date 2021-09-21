@@ -35,9 +35,6 @@ class EnvironmentSchema {
   ACCOUNTS_SEEDER: boolean;
 
   @IsBoolean()
-  PRODUCTS_SEEDER: boolean;
-
-  @IsBoolean()
   CATEGORY_SEEDER: boolean;
 
   //Mongo

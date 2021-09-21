@@ -21,6 +21,6 @@ export class QueryProductsDto extends PaginationQuery {
 
   @IsOptional()
   @IsEnum(ProductStatus)
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ enum: ProductStatus })
   status: ProductStatus;
 }

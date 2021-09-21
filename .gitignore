@@ -38,3 +38,5 @@ lerna-debug.log*
 
 src/public/avatar/*
 !src/public/avatar/.gitkeep
+src/public/drink/*
+!src/public/drink/.gitkeep

@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import * as mongoose from 'mongoose';
 import { InjectModel } from 'nestjs-typegoose';
 import { ReturnModelType } from '@typegoose/typegoose';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -54,7 +55,10 @@ export class ProductService {
   async queryProducts(filter, options: PaginationOption) {
     if (filter.type) {
       const type = await this.categoryService.findByName(filter.type);
-      Object.assign(filter, { type });
+      delete filter.type;
+      Object.assign(filter, {
+        'type._id': new mongoose.Types.ObjectId(type.id),
+      });
     }
     const products = await this.productDoc.paginate(filter, options);
     return products;

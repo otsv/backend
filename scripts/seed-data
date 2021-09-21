@@ -1,0 +1,14 @@
+#!/bin/bash
+
+[[ -z ${MONGO_USERNAME} ]] && echo "MONGO_USERNAME is required!" && exit 0;
+[[ -z ${MONGO_PASSWORD} ]] && echo "MONGO_PASSWORD is required!" && exit 0;
+[[ -z ${MONGO_DBHOST} ]] && echo "MONGO_DBHOST is required!" && exit 0;
+[[ -z ${MONGO_DBPORT} ]] && echo "MONGO_DBPORT is required!" && exit 0;
+[[ -z ${MONGO_DBNAME} ]] && echo "MONGO_DBNAME is required!" && exit 0;
+[[ -z ${PRODUCTS_COUNT} ]] && echo "PRODUCTS_COUNT is required!" && exit 0;
+
+node  scripts/seed-products.js
+
+#Example command to run
+#PRODUCTS_COUNT : number of product need to be fake
+#$ PRODUCTS_COUNT=100 MONGO_USERNAME=changeme MONGO_PASSWORD=changeme MONGO_DBHOST=localhost MONGO_DBPORT=27017 MONGO_DBNAME=otsv_coffee ./scripts/seed-data

@@ -63,7 +63,7 @@ export class AuthController {
 
   @Get('/me')
   @UseGuards(JwtAuthGuard)
-  @ApiBody({ type: User })
+  @ApiResponse({ type: User })
   async session(@Req() request: Request) {
     const user = request.user as User;
     return { user };
