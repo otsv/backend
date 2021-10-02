@@ -2,7 +2,6 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { AppConfigService } from 'src/common/config/config.service';
-import { User } from 'src/module/user/entities/user.entity';
 import { UserService } from 'src/module/user/user.service';
 import { AuthService } from '../auth.service';
 
@@ -25,7 +24,7 @@ export class JwtAuthStrategy extends PassportStrategy(Strategy) {
     return bearerToken.split('Bearer ')[1];
   }
 
-  async validate(request: Request, payload: any): Promise<User> {
+  async validate(request: Request, payload: any) {
     const { sub: userId } = payload;
     const accessToken = this.getAccessTokenFromHeader(
       request.headers['authorization'],

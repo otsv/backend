@@ -15,11 +15,14 @@ import { User, UserDoc } from './entities/user.entity';
 import { unlink } from 'fs/promises';
 import * as path from 'path';
 import { avatarPath } from 'src/common/constant/constant';
+import { OrderItemManager } from '../order/entities/order-item-management';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User) private readonly userDoc: ReturnModelType<typeof User>,
+    @InjectModel(OrderItemManager)
+    private readonly orderManagerDoc: ReturnModelType<typeof OrderItemManager>,
     private readonly config: AppConfigService,
     private readonly roleService: RoleService,
   ) {}
@@ -70,8 +73,21 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
+    //yyyy-mm-dd
+    const dateCreated = new Date().toISOString().slice(0, 10);
+    const todayOrders = await this.orderManagerDoc.findOne(
+      {
+        accountEmail: user.email,
+        date: new Date(dateCreated),
+      },
+      { totalItems: 1 },
+    );
+    let remainingBalance = user.dailyBalance;
+    if (todayOrders) {
+      remainingBalance -= todayOrders.totalItems;
+    }
 
-    return user;
+    return Object.assign(user, { remainingBalance });
   }
 
   async findUserByEmail(email: string): Promise<User> {

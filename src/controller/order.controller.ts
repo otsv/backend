@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -12,18 +13,19 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { pick } from 'lodash';
+import { assign, pick } from 'lodash';
 import { PaginationResult } from 'src/common/constant/pagination.dto';
 import { RoleEnum } from 'src/common/constant/roles';
 import { Acl } from 'src/decorator/acl.decorator';
 import { AclGuard } from 'src/guards/acl.guard';
 import { JwtAuthGuard } from 'src/guards/auth.guard';
-import { QueryOrderDto } from 'src/module/order/dto/query-order.dto';
-import { User } from 'src/module/user/entities/user.entity';
+import { CreateOrderItemDto } from 'src/module/order/dto/order-item/create-order-item.dto';
+import { QueryOrderItem } from 'src/module/order/dto/order-item/query-order-item.dto';
+import { UpdateOrderItemDto } from 'src/module/order/dto/order-item/update-order-item.dto';
+import { OrderItem } from 'src/module/order/entities/order-item.entity';
+
+import { User, UserDoc } from 'src/module/user/entities/user.entity';
 import { UserService } from 'src/module/user/user.service';
-import { CreateOrderDto } from '../module/order/dto/create-order.dto';
-import { UpdateOrderDto } from '../module/order/dto/update-order.dto';
-import { Order } from '../module/order/entities/order.entity';
 import { OrderService } from '../module/order/order.service';
 
 @Controller('orders')
@@ -38,11 +40,11 @@ export class OrderController {
   @Post()
   @ApiBearerAuth()
   @Acl(RoleEnum.employee)
-  @ApiResponse({ type: Order })
+  @ApiResponse({ type: OrderItem })
   create(
-    @Body() createOrderDto: CreateOrderDto,
+    @Body() createOrderDto: CreateOrderItemDto,
     @Req() request: Request,
-  ): Promise<Order> {
+  ): Promise<OrderItem> {
     const user = request.user as User;
     return this.orderService.create(createOrderDto, user);
   }
@@ -51,40 +53,78 @@ export class OrderController {
   @ApiBearerAuth()
   @Acl(RoleEnum.employee)
   @ApiResponse({ type: PaginationResult })
-  async getMyOrder(@Query() query: QueryOrderDto, @Req() request: Request) {
-    const filter = pick(query, ['status']);
+  async getMyOrder(@Query() query: QueryOrderItem, @Req() request: Request) {
+    const filter = pick(query, ['status']) as { [k: string]: any };
     const options = pick(query, ['sortBy', 'limit', 'page']);
-    const user = request.user as any;
+    const user = request.user as UserDoc;
+    if (query.fromDate) {
+      filter.createdAt = { $gte: new Date(query.fromDate) };
+    }
+    if (query.toDate) {
+      filter.createdAt = assign(filter.createdAt || {}, {
+        $lte: new Date(query.toDate),
+      });
+    }
+
     return await this.orderService.queryOrders(
-      { ...filter, userId: user.id },
+      { ...filter, accountEmail: user.email },
       options,
     );
   }
 
   @Get()
   @ApiBearerAuth()
-  @Acl(RoleEnum.vendor)
+  @Acl(RoleEnum.vendor, RoleEnum.admin)
   @ApiResponse({ type: PaginationResult })
-  async getOrder(@Query() query: QueryOrderDto) {
-    const filter = pick(query, ['status', 'email']);
+  async getOrder(@Query() query: QueryOrderItem) {
+    const filter = pick(query, ['status', 'accountEmail']) as {
+      [k: string]: any;
+    };
     const options = pick(query, ['sortBy', 'limit', 'page']);
-    let userId;
-    if (filter.email) {
-      userId = await this.userService.findUserByEmail(filter.email);
-      delete filter.email;
-      Object.assign(filter, { userId });
+    if (query.fromDate) {
+      filter.createdAt = { $gte: new Date(query.fromDate) };
     }
+    if (query.toDate) {
+      filter.createdAt = assign(filter.createdAt || {}, {
+        $lte: new Date(query.toDate),
+      });
+    }
+
     return await this.orderService.queryOrders(filter, options);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.orderService.findOne(id);
+  @ApiBearerAuth()
+  @Acl(RoleEnum.vendor, RoleEnum.admin)
+  async findOne(@Param('id') id: string) {
+    return await this.orderService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateOrderDto: UpdateOrderDto) {
-    return this.orderService.update(id, updateOrderDto);
+  @Patch('/status/:id')
+  @ApiBearerAuth()
+  @Acl(RoleEnum.vendor, RoleEnum.admin)
+  updateStatusOrder(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderItemDto,
+  ) {
+    const newstatus = updateOrderDto.status;
+    if (!newstatus) {
+      throw new BadRequestException();
+    }
+    return this.orderService.updateStatus(id, newstatus);
+  }
+
+  @Patch('/me/:id')
+  @ApiBearerAuth()
+  @Acl(RoleEnum.employee)
+  updateOrderMe(
+    @Param('id') id: string,
+    @Body() updateOrderDto: UpdateOrderItemDto,
+    @Req() request: Request,
+  ) {
+    const body = pick(updateOrderDto, ['quantity', 'note']);
+    const user = request.user as UserDoc;
+    return this.orderService.updateOrderMe(id, body, user);
   }
 
   @Delete(':id')

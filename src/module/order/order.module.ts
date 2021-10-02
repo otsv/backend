@@ -2,9 +2,10 @@ import { Module } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { OrderController } from '../../controller/order.controller';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { Order } from './entities/order.entity';
 import { UserModule } from '../user/user.module';
 import { ProductModule } from '../product/product.module';
+import { OrderItem } from './entities/order-item.entity';
+import { OrderItemManager } from './entities/order-item-management';
 
 @Module({
   imports: [
@@ -12,7 +13,13 @@ import { ProductModule } from '../product/product.module';
     ProductModule,
     TypegooseModule.forFeature([
       {
-        typegooseClass: Order,
+        typegooseClass: OrderItem,
+        schemaOptions: {
+          timestamps: true,
+        },
+      },
+      {
+        typegooseClass: OrderItemManager,
         schemaOptions: {
           timestamps: true,
         },

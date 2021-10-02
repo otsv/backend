@@ -1,40 +1,47 @@
-import { Injectable } from '@nestjs/common';
-import { mongoose, ReturnModelType } from '@typegoose/typegoose';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { ReturnModelType } from '@typegoose/typegoose';
 import { InjectModel } from 'nestjs-typegoose';
-import { OrderState } from 'src/common/constant/order-status';
 import { PaginationOption } from 'src/common/constant/pagination.dto';
 import { ProductService } from '../product/product.service';
-import { User } from '../user/entities/user.entity';
+import { User, UserDoc } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { OrderItemDto } from './dto/order-item.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { Order } from './entities/order.entity';
+import { CreateOrderItemDto } from './dto/order-item/create-order-item.dto';
+import { OrderItem } from './entities/order-item.entity';
+import { OrderItemManager } from './entities/order-item-management';
+import {
+  OrderItemStatus,
+  ProductStatus,
+} from 'src/common/constant/product-status';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel(Order)
-    private readonly orderDoc: ReturnModelType<typeof Order>,
+    @InjectModel(OrderItem)
+    private readonly orderItemDoc: ReturnModelType<typeof OrderItem>,
+    @InjectModel(OrderItemManager)
+    private readonly orderManagerDoc: ReturnModelType<typeof OrderItemManager>,
     private readonly userService: UserService,
     private readonly productService: ProductService,
   ) {}
 
-  async create(createOrderDto: CreateOrderDto, user: User): Promise<Order> {
-    const items = await Promise.all(
-      createOrderDto.items.map(async (item: OrderItemDto) => {
-        const product = await this.productService.findOne(item.productId);
-        return {
-          quantity: item.quantity,
-          product: mongoose.Types.ObjectId(product.id),
-        };
-      }),
-    );
-    const createdOrder = await this.orderDoc.create({
-      items,
-      userId: user.id,
-      notes: createOrderDto.notes,
-      status: OrderState.open,
+  async create(
+    createOrderDto: CreateOrderItemDto,
+    user: User,
+  ): Promise<OrderItem> {
+    const product = await this.productService.findOne(createOrderDto.productId);
+    if (product.status == ProductStatus.outofstock) {
+      throw new BadRequestException('product is out of stock');
+    }
+    const createdOrder = await this.orderItemDoc.create({
+      product,
+      accountEmail: user.email,
+      createdBy: user.id,
+      note: createOrderDto.note,
+      quantity: createOrderDto.quantity,
     });
 
     return await createdOrder.save();
@@ -51,16 +58,72 @@ export class OrderService {
    * @returns {Promise<QueryResult>}
    */
   async queryOrders(filter, options: PaginationOption) {
-    const orders = await this.orderDoc.paginate(filter, options);
+    const orders = await this.orderItemDoc.paginate(filter, options);
     return orders;
   }
 
-  findOne(id: string) {
-    return `This action returns a #${id} order`;
+  async findOne(id: string) {
+    try {
+      const order = await this.orderItemDoc.findById(id);
+      if (!order) {
+        throw new NotFoundException('order not found');
+      }
+      return order;
+    } catch (err) {
+      throw new NotFoundException('order not found');
+    }
   }
 
-  update(id: string, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
+  async updateStatus(id: string, newState: OrderItemStatus) {
+    const order = await this.orderItemDoc.findById(id);
+    if (!order) {
+      throw new NotFoundException('order not found');
+    }
+    if (
+      order.status === OrderItemStatus.cancelled ||
+      order.status === OrderItemStatus.pickedup
+    ) {
+      throw new BadRequestException('Order has been cancelled or completed');
+    }
+    Object.assign(order, { status: newState });
+
+    //once order done, save/update to manage collections
+    if (newState === OrderItemStatus.pickedup) {
+      //yyyy-mm-dd
+      const dateCreated = new Date().toISOString().slice(0, 10);
+      await this.orderManagerDoc.findOneAndUpdate(
+        {
+          accountEmail: order.accountEmail,
+          date: new Date(dateCreated),
+        },
+        {
+          accountEmail: order.accountEmail,
+          date: new Date(dateCreated),
+          $push: { items: order },
+          $inc: {
+            totalItems: order.quantity,
+            totalPrice: order.quantity * order.product.price,
+          },
+        },
+        { upsert: true },
+      );
+    }
+
+    return await order.save();
+  }
+
+  async updateOrderMe(id: string, body, user: UserDoc) {
+    const order = await this.orderItemDoc.findById(id);
+    if (!order || order.accountEmail != user.email) {
+      throw new NotFoundException('order not found');
+    }
+    if (order.status != OrderItemStatus.new) {
+      throw new BadRequestException('Order is not available to update');
+    }
+
+    Object.assign(order, body);
+
+    return await order.save();
   }
 
   remove(id: string) {

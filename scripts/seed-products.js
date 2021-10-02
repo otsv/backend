@@ -20,7 +20,6 @@ async function seedProduct() {
 
   const count = process.env.PRODUCTS_COUNT || 0;
 
-  console.log(uri);
   const client = new MongoClient(uri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,

@@ -47,11 +47,11 @@ export class AuthController {
     return await this.authService.login(user);
   }
 
-  @Delete('/logout')
+  @Post('/logout')
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   async logout(@Req() request: Request) {
-    const user = request.user as User;
+    const user = request.user as UserDoc;
     return await this.authService.logout(user);
   }
 
@@ -65,8 +65,13 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @ApiResponse({ type: User })
   async session(@Req() request: Request) {
-    const user = request.user as User;
-    return { user };
+    const user = request.user as any;
+    return {
+      user: {
+        ...user.toJSON(),
+        remainingBalance: user.remainingBalance,
+      },
+    };
   }
 
   @Post('/change-password')
