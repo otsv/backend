@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import { RoleService } from './roles.service';
+import { RoleService } from './services/roles.service';
 import { TypegooseModule } from 'nestjs-typegoose';
-import { Role } from './roles.entity';
-import { RoleController } from '../../controller/role.controller';
+import { Role } from './enitties/roles.entity';
+import { RoleController } from './controllers/role.controller';
 
 @Module({
   imports: [TypegooseModule.forFeature([Role])],

@@ -10,9 +10,9 @@ import {
   Min,
   Validate,
 } from 'class-validator';
-import { RoleEnum } from 'src/common/constant/roles';
-import { PasswordContains } from 'src/validation/password.validation';
-import { UserStatus } from '../../../common/constant/user-status';
+import { RoleType } from 'src/module/roles/constants';
+import { PasswordContains } from 'src/module/shared/validation/password.validation';
+import { UserStatus } from '../constants/user.constant';
 
 export class CreateUserDto {
   @IsString()
@@ -28,9 +28,9 @@ export class CreateUserDto {
   password: string;
 
   @IsString()
-  @IsEnum(RoleEnum)
+  @IsEnum(RoleType)
   @ApiProperty({
-    enum: RoleEnum,
+    enum: RoleType,
   })
   role: string;
 

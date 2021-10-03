@@ -1,6 +1,6 @@
 import { CallHandler, ExecutionContext, NestInterceptor } from '@nestjs/common';
 import { map, Observable } from 'rxjs';
-import { ResponseSerializer } from 'src/base/entities/base.serializer';
+import { ResponseSerializer } from 'src/module/shared/entities/base.serializer';
 
 export class ResponseInterceptor implements NestInterceptor {
   intercept(

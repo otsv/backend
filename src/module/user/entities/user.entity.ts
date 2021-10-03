@@ -9,13 +9,13 @@ import {
 } from '@typegoose/typegoose';
 import * as bcrypt from 'bcrypt';
 import { Schema } from 'mongoose';
-import { RoleEnum } from 'src/common/constant/roles';
-import paginate from 'src/database/plugin/paginate';
-import toJson from 'src/database/plugin/toJson';
-import { Role } from 'src/module/roles/roles.entity';
+import paginate from 'src/database/mongo/plugin/paginate';
+import toJson from 'src/database/mongo/plugin/toJson';
+import { Role } from 'src/module/roles/enitties/roles.entity';
 import validator from 'validator';
 import * as autopopulate from 'mongoose-autopopulate';
-import { UserStatus } from '../../../common/constant/user-status';
+import { UserStatus } from '../constants/user.constant';
+import { RoleType } from 'src/module/roles/constants';
 
 @pre<User>('save', async function () {
   if (this.isModified('password')) {
@@ -60,7 +60,7 @@ export class User {
     ref: () => Role,
     autopopulate: true,
   })
-  @ApiProperty({ enum: RoleEnum })
+  @ApiProperty({ enum: RoleType })
   role: Ref<Role>;
 
   @prop({ required: true, default: UserStatus.activate })

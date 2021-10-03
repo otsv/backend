@@ -1,14 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { RoleEnum } from 'src/common/constant/roles';
-import { ACL_KEY } from 'src/decorator/acl.decorator';
+import { RoleType } from 'src/module/roles/constants';
+import { ACL_KEY } from 'src/decorators/acl.decorator';
 
 @Injectable()
 export class AclGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {
-    const roles = this.reflector.get<RoleEnum[]>(ACL_KEY, context.getHandler());
+    const roles = this.reflector.get<RoleType[]>(ACL_KEY, context.getHandler());
 
     if (!roles) {
       return true;

@@ -1,8 +1,8 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
+import { AppModule } from 'src/app';
 import { AppConfigService } from './common/config/config.service';
-import { SeedService } from './module/seed/seed.service';
+import { SeedService } from './database/seed/seed.service';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import * as info from 'package.json';
 

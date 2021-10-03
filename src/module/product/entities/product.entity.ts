@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { plugin, prop, Ref, ReturnModelType } from '@typegoose/typegoose';
-import { BaseEntity } from 'src/base/entities/base.entity';
-import { ProductStatus } from 'src/common/constant/product-status';
-import paginate from 'src/database/plugin/paginate';
-import toJson from 'src/database/plugin/toJson';
-import { Category } from '../category/entities/category.entity';
+import { BaseEntity } from 'src/module/shared/entities/base.entity';
+import { ProductStatus } from 'src/module/product/constants/product.constant';
+import paginate from 'src/database/mongo/plugin/paginate';
+import toJson from 'src/database/mongo/plugin/toJson';
+import { Category } from '../../category/entities/category.entity';
 
 @plugin(toJson)
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,7 +29,7 @@ export class Product extends BaseEntity {
   @ApiProperty()
   id: string;
 
-  @prop({ required: true, default: ProductStatus.instock })
+  @prop({ required: true, default: ProductStatus.inStock })
   @ApiProperty({ enum: ProductStatus })
   status: ProductStatus;
 

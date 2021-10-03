@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
-import { OrderItemStatus } from 'src/common/constant/product-status';
+import { OrderItemStatus } from 'src/module/product/constants/product.constant';
 
 export class UpdateOrderItemDto {
   @ApiPropertyOptional()

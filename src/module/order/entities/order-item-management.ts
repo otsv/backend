@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { index, prop } from '@typegoose/typegoose';
-import { BaseEntity } from 'src/base/entities/base.entity';
+import { BaseEntity } from 'src/module/shared/entities/base.entity';
 import { OrderItem } from './order-item.entity';
 
 @index({ accountEmail: 1, date: -1 })

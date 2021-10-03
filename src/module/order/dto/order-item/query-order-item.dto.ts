@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
-import { PaginationQuery } from 'src/common/constant/pagination.dto';
-import { OrderItemStatus } from 'src/common/constant/product-status';
+import { PaginationQuery } from 'src/module/shared/dtos/pagination.dto';
+import { OrderItemStatus } from 'src/module/product/constants/product.constant';
 
 export class QueryOrderItem extends PaginationQuery {
   @IsString()
