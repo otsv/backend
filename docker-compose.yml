@@ -13,6 +13,8 @@ services:
     depends_on:
       - mongo
       - redis
+    networks:
+      - cafe-network
 
   mongo:
     image: mongo:5.0
@@ -23,6 +25,8 @@ services:
       - '27017:27017'
     volumes:
       - storage/:/data/db
+    networks:
+      - cafe-network
 
   redis:
     image: redis
@@ -32,7 +36,25 @@ services:
       - '6379:6379'
     volumes:
       - redis-storage/:/data
+    networks:
+      - cafe-network
+
+  mongo-express:
+    image: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_PORT=27017
+    depends_on:
+      - mongo
+    ports:
+      - '8081:8081'
+    networks:
+      - cafe-network
 
 volumes:
   storage:
   redis-storage:
+
+networks:
+  cafe-network:
+    driver: bridge

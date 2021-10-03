@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { index, plugin, prop, ReturnModelType } from '@typegoose/typegoose';
-import { BaseEntity } from 'src/base/entities/base.entity';
-import { OrderItemStatus } from 'src/common/constant/product-status';
-import paginate from 'src/database/plugin/paginate';
-import toJson from 'src/database/plugin/toJson';
+import { BaseEntity } from 'src/module/shared/entities/base.entity';
+import { OrderItemStatus } from 'src/module/product/constants/product.constant';
+import paginate from 'src/database/mongo/plugin/paginate';
+import toJson from 'src/database/mongo/plugin/toJson';
 import { Product } from 'src/module/product/entities/product.entity';
 
 @plugin(toJson)
