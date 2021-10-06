@@ -2,13 +2,23 @@ version: '3.4'
 
 services:
   ostvcafeteria:
-    image: ostvcafeteria-backend:latest
+    container_name: 'ostvcafeteria'
+    build:
+      context: .
+      target: development
+    volumes:
+      - .:/usr/src/app
+      - /usr/src/app/node_modules
     environment:
       - NODE_ENV=${NODE_ENV}
       - MONGO_URL=mongodb://mongo:27017:cafeteria
       - PORT=${PORT}
     ports:
-      - '${PORT}:${PORT}'
+      - '${PORT}:3000'
+      - 9229:9229
+    command: npm run start:dev
+    env_file:
+      - .env
     restart: unless-stopped
     depends_on:
       - mongo
@@ -24,7 +34,7 @@ services:
     ports:
       - '27017:27017'
     volumes:
-      - storage/:/data/db
+      - storage:/data/db
     networks:
       - cafe-network
 
@@ -35,7 +45,7 @@ services:
     ports:
       - '6379:6379'
     volumes:
-      - redis-storage/:/data
+      - redis-storage:/data
     networks:
       - cafe-network
 
